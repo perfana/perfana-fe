@@ -80,7 +80,7 @@ meteor --settings settings.json --port 4000
 
 The application will be available at `http://localhost:4000`
 
-## 🐳 Docker Setup
+##  Docker Setup
 
 If you prefer using Docker, you can use the provided Dockerfile:
 
@@ -89,7 +89,7 @@ docker build -t perfana-fe .
 docker run -p 4000:4000 perfana-fe
 ```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 perfana-fe/
@@ -106,7 +106,7 @@ perfana-fe/
 └── settings.json        # Configuration file
 ```
 
-## ⚙️ Configuration
+##  Configuration
 
 
 ### Optional settings
@@ -138,7 +138,7 @@ Example for using Keycloak:
 }
 ```
 
-## 🧪 Development
+##  Development
 
 ### Available Scripts
 
@@ -167,7 +167,7 @@ The project uses:
      - `MONGO_OPLOG_URL=mongodb://mongo:27017/local?authSource=admin&replicaSet=rs0`
 
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Please follow these steps:
 
@@ -182,23 +182,21 @@ We welcome contributions! Please follow these steps:
 - Add tests for new features
 - Update documentation as needed
 
-## 📄 License
+## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+## Links
 
 - [Documentation](https://docs.perfana.io/)
 - [Demo Environment](https://github.com/perfana/perfana-demo)
 - [Issues](https://github.com/perfana/perfana-fe/issues)
 
-## 📞 Support
+## Support
 
 For support and questions:
 - Create an issue in this repository
 - Check the documentation at [docs.perfana.io](https://docs.perfana.io/)
 
-
 ---
 
-**Built with ❤️ by the Perfana team**
