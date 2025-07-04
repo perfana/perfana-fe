@@ -1,0 +1,7 @@
+{
+  "name": "sweetalert",
+  "version": "^2.1.2",
+  "license": "MIT",
+  "repository": "git+https://github.com/t4t5/sweetalert.git",
+  "homepage": "https://sweetalert.js.org/"
+}

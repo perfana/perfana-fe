@@ -1,0 +1,7 @@
+{
+  "name": "babel-eslint",
+  "version": "^10.1.0",
+  "license": "MIT",
+  "repository": "git+https://github.com/babel/babel-eslint.git",
+  "homepage": "https://github.com/babel/babel-eslint"
+}

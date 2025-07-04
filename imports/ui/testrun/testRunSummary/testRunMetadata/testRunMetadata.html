@@ -1,0 +1,194 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunMetadata">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h5 class="perfana-summery-header">Test run information</h5>
+    </div>
+    <div class="panel-body">
+      <table class="table test-run-information__table">
+        <tbody>
+        <tr>
+          <th class="col-md-3">System under test</th>
+          <td>{{testRun.application}}</td>
+
+        </tr>
+
+        <tr>
+          <th class="col-md-3">Version</th>
+            <td><div id="edit-release" class="{{#if userHasPermissionForApplication}}show-pointer{{/if}}" title="{{#if userHasPermissionForApplication}}Click to edit{{else}}Log in with authorised user to edit{{/if}}">{{testRun.applicationRelease}}</div></td>
+        </tr>
+        <tr>
+          <th class="col-md-3">Environment</th>
+            <td>{{testRun.testEnvironment}}</td>
+
+        </tr>
+        <tr>
+          <th class="col-md-3">Workload</th>
+          <td>{{testRun.testType}}</td>
+        </tr>
+        <tr>
+          <th class="col-md-3">ID</th>
+          <td>{{testRun.testRunId}}</td>
+        </tr>
+
+        <tr>
+            <th class="col-md-3">Start</th>
+            <td id="edit-start" class="{{#if userHasPermissionForApplication}}show-pointer{{/if}}" title="{{#if userHasPermissionForApplication}}Click to edit{{else}}Log in with authorised user to edit{{/if}}">{{formatDateHelper testRun.start}}</td>
+        </tr>
+        <tr>
+          <th class="col-md-3">End</th>
+          <td id="edit-end" class="{{#if userHasPermissionForApplication}}show-pointer{{/if}}" title="{{#if userHasPermissionForApplication}}Click to edit{{else}}Log in with authorised user to edit{{/if}}">{{formatDateHelper testRun.end}}</td>
+        </tr>
+        <tr>
+            <th class="col-md-3">Duration</th>
+            <td>{{humanReadableDurationHelper testRun.duration}}</td>
+        </tr>
+        <tr>
+            <th class="col-md-3">Ramp up time</th>
+            <td>{{humanReadableDurationHelper testRun.rampUp}}</td>
+        </tr>
+        <tr>
+          <th class="col-md-3">Completed</th>
+          <td>{{testRunCompleted}}</td>
+        </tr>
+            <tr>
+                <th class="col-md-3">Tags</th>
+                {{#if testRunHasTags}}
+                    <td  id="edit-tags" class="{{#if userHasPermissionForApplication}}show-pointer{{/if}}" title="{{#if userHasPermissionForApplication}}Click to edit{{else}}Log in with authorised user to edit{{/if}}">
+                        {{#each testRun.tags}}
+                            <span class=" break-word label label-default">{{this}}</span>
+                        {{/each}}
+                    </td>
+                {{ else }}
+                    <td class="link">
+                        <a class="add-tags">Add tags</a>
+                    </td>
+                {{/if}}
+            </tr>
+
+        {{#if testRunHasCIBuildResultsUrl}}
+            <tr>
+                <th class="col-md-3">CI build result</th>
+                <td class="link"><div class="ci-build-result-url">{{testRun.CIBuildResultsUrl}}</div></td>
+            </tr>
+        {{/if}}
+        <tr>
+          <th class="col-md-3">Annotations</th>
+          {{#if testRunHasAnnotations}}
+             <td class="annotations {{#if userHasPermissionForApplication}}show-pointer{{/if}}" id="edit-annotations" data-toggle="tooltip" data-placement="top" title="{{#if userHasPermissionForApplication}}Click to edit{{else}}Log in with authorised user to edit{{/if}}">{{testRun.annotations}}</td>
+          {{ else }}
+              <td class="link">
+                  <a class="add-annotations">Add annotations</a>
+              </td>
+          {{/if}}
+        </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
+</template>
+
+
+<template name="testRunAnnotation">
+    <div class="modal fade" id="testrun-annotations-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Test run annotations</h4>
+                </div>
+
+                <div class="modal-body">
+                    <textarea id="annotations" class="form-control testrun-annotation">{{annotations}}</textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-testrun-annotations">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="testRunRelease">
+    <div class="modal fade" id="testrun-release-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Version</h4>
+                </div>
+
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="release" value="{{release}}" placeholder="Add version">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-default" id="save-testrun-release">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="testRunTagsModal">
+    <div class="modal fade" id="test-run-tags-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit test run tags</h4>
+                </div>
+                <div class="modal-body" style="padding:10px;">
+                    {{> testRunTagsSearchBox view='testRunInformation'}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"  id="save-tags">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="testRunEditDateTimeModal">
+    <div class="modal fade" id="test-run-edit-date-time-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Update test run {{ timestamp }}</h4>
+                </div>
+                <div class="modal-body" style="padding:10px;">
+                    <div class="input-group datetimepicker">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        <input class="set-due-date form-control" type="text"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"  id="save-timestamp">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

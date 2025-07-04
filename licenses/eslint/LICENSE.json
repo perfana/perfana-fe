@@ -1,0 +1,7 @@
+{
+  "name": "eslint",
+  "version": "^8.57.1",
+  "license": "MIT",
+  "repository": "git+https://github.com/eslint/eslint.git",
+  "homepage": "https://eslint.org"
+}

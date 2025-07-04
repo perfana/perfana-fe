@@ -1,0 +1,181 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunDashboards">
+  <div class="well">
+<!--  <div class="panel panel-default">-->
+<!--    <div class="panel-heading">-->
+<!--        <h5 class="perfana-summery-header">Dashboards</h5>-->
+<!--    </div>-->
+<!--    {{> applicationDashboardTagsSearchBox }}-->
+      <div class="input-group dashboard-filter col-md-3 pull-right">
+<!--          <span class="input-group-addon"><i class="fa fa-filter reactive-table-icon"></i></span>-->
+          <input type="text" class="form-control" id="dashboard-filter" placeholder="Filter" value="{{dashboardFilter}}">
+          <span class="input-group-addon clear-filter"><i class="fa fa-times reactive-table-icon"></i></span>
+      </div>
+    <div>
+      <div role="tabpanel" class="tab-pane" id="application-dashboard-tabs">
+          <ul class="nav nav-tabs application-dashboard-tags" role="tablist">
+              <li role="presentation" class="active"><a href="#all" role="tab" data-toggle="tab">All</a></li>
+              {{# each applicationDashboardsTags }}
+                  <li role="presentation"><a href="#{{@index}}" role="tab" data-toggle="tab">{{this}}</a></li>
+              {{/ each}}
+          </ul>
+      </div>
+      <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="all">
+              {{#if applicationDashboardTagTabActive 'all' }}
+                  {{#each applicationDashboards}}
+                      {{> testRunDashboardsAccordion  }}
+                  {{/each}}
+              {{/if}}
+          </div>
+        {{# each applicationDashboardsTags }}
+            <div role="tabpanel" class="tab-pane" id="{{@index}}">
+            {{#if applicationDashboardTagTabActive @index }}
+                {{#each applicationDashboards}}
+                    {{> testRunDashboardsAccordion  }}
+                {{/each}}
+            {{/if}}
+            </div>
+        {{/ each}}
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<template name="testRunDashboardsAccordion">
+    <div class="panel-group comparison-details-dashboards" id="dashboard-accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#dashboard-accordion-{{slugify dashboardLabel}}-{{dashboardUid}}">
+                        <!--                        <div style="width: 100%;">-->
+                        <div class="col-md-11">
+                            {{#if metricHeaderCollapsed}}
+                                <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                    <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                                </div>
+                            {{ else }}
+                                <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                    <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                                </div>
+                            {{/if}}
+                            <div class="drilldown-accordion-toggle col-md-11 perfana-testrun-meta-data" >{{dashboardLabel}}</div>
+
+                        </div>
+
+                        <div class="col-md-1">
+                            {{#if userHasPermissionForApplication}}
+                                <div>
+                                    <i id="open-key-metrics-modal"  class="fa fa-check-square-o col-md-3" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Add Service Level Indicator"></i>
+                                </div>
+                            {{/if}}
+<!--                            {{#if snapshotMissing}}-->
+<!--                                <div>-->
+<!--                                    <i id="manage-test-run-link"  class="fa fa-exclamation-triangle col-md-3" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Snapshot missing, go to Manage tab to fix"></i>-->
+<!--                                </div>-->
+<!--                            {{ else }}-->
+                                <div>
+                                    <i id="open-comment-box"  class="fa fa-comment  col-md-3" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Comment on this dashboard"></i>
+                                </div>
+<!--                            {{/if}}-->
+                            <div>
+                              <i id="grafana-dashboard-link" class="fa fa-external-link   col-md-3" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Open in Grafana"></i>
+                            </div>
+                        </div>
+                    </div>
+                </h4>
+            </div>
+            <div id="dashboard-accordion-{{slugify dashboardLabel}}-{{dashboardUid}}" class="panel-collapse collapse metric-collapse">
+                <div class="panel-body">
+                    {{#unless metricHeaderCollapsed}}
+                        {{> grafanaDashboardIframe }}
+                    {{/unless}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+
+<template name="grafanaDashboardIframe">
+      {{#if showSnapshots}}
+          {{# if hasGrafanaSnapshotUrl}}
+            <iframe id="grafanaDashboardIframe" height="{{windowHeight}}" width="100%" src="{{grafanaSnapshotUrl}}" frameborder="0" allowfullscreen=""></iframe>
+          {{ else }}
+              <div style="width: 100%;  height: 600px;">
+                  <p class="test-run-expired">Dashboard not available, check Grafana snapshots in Manage tab</p>
+              </div>
+          {{/if}}
+      {{else}}
+          <iframe id="grafanaDashboardIframe" height="{{windowHeight}}" width="100%" src="{{grafanaUrl}}" frameborder="0" allowfullscreen=""></iframe>
+      {{/if}}
+</template>
+
+
+<template name="commentsModal">
+    <div class="modal fade" id="commentsModal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+                    {{> commentBox dashboardLabel=dashboardLabel dashboardUid=dashboardUid grafana=grafana panelTitle=panelTitle panelId=panelId testRun=testRun reply=false}}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="close-comments-modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="addKeyMetricsModal">
+    <div class="modal fade" id="addKeyMetricsModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Service Level Indicator</h4>
+                </div>
+                <div class="modal-body" style="padding:10px;">
+                    {{> keyMetricsPanelSearchBox grafana=grafana dashboardUid=dashboardUid dashboardId=dashboardId application=application testEnvironment=testEnvironment testType=testType}}
+                    {{#if panelSelected}}
+                        {{#if hasGraphPreviewUrl}}
+                            {{#if testRunExpired}}
+                                <div>
+                                    <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                                </div>
+                            {{ else}}
+                                <div>
+                                    <iframe class="grafana-iframe comments-graph-preview" src="{{setTheme graphPreviewUrl}}"  frameBorder="0"  width="100%" height="600"></iframe>
+                                </div>
+                            {{/if}}
+                        {{ else }}
+                            <div style="width: 100%;  height: 600px;">
+                                <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                            </div>
+                        {{/if}}
+                    {{/if}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="add-key-metric">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+                </div>
+            </div>
+        </div>
+</template>

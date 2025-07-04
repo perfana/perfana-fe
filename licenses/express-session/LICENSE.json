@@ -1,0 +1,7 @@
+{
+  "name": "express-session",
+  "version": "^1.17.2",
+  "license": "MIT",
+  "repository": "git+https://github.com/expressjs/session.git",
+  "homepage": "https://github.com/expressjs/session#readme"
+}

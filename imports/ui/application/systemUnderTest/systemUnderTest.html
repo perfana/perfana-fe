@@ -1,0 +1,399 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="systemUnderTest">
+
+    <div class="perfana-content">
+        {{> perfanaBreadcrumb}}
+        <div class="col-lg-6 col-md-12  well">
+            <h5 class="well__heading">Global settings for <span class="break-word label label-default" style="margin:5px;">{{application.name}}</span>
+            </h5>
+
+            <table class="table test-run-information__table">
+                <tbody>
+                    <tr>
+                        <th class="{{#unless tracingConfigured}}tracing-not-configured{{/unless}} col-md-4">Tracing service name</th>
+                        <td>
+                            <div>
+                                {{#if tracingConfigured}}
+                                    <div class="col-md-11" id="global-tracing-service">{{application.tracingService}}</div>
+                                    {{#if userHasPermissionForApplication}}
+                                        <i class="fa fa-pencil reactive-table-icon col-md-1" id="edit-global-tracing-service" aria-hidden="true"></i>
+                                    {{/if}}
+                                {{ else }}
+                                    <div class="col-md-12 tracing-not-configured">No tracing has been configured</div>
+                                {{/if}}
+                            </div>
+
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th class="{{#unless pyroscopeConfigured}}pyroscope-not-configured{{/unless}} col-md-4">Pyroscope settings</th>
+                        <td>
+                            <div>
+                                {{#if pyroscopeConfigured}}
+                                    <div class="col-md-11">
+                                        <span id="global-pyroscope-application">{{application.pyroscopeApplication}}</span>
+                                        <span id="global-pyroscope-profiler"> {{application.pyroscopeProfiler}}</span>
+                                    </div>
+
+                                    {{#if userHasPermissionForApplication}}
+                                        <i class="fa fa-pencil reactive-table-icon col-md-1" id="edit-global-pyroscope-application" aria-hidden="true"></i>
+                                    {{/if}}
+                                {{ else }}
+                                    <div class="col-md-12 pyroscope-not-configured">No Pyroscope instance has been configured</div>
+                                {{/if}}
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {{#if dynatraceConfigured}}
+                        <tr>
+                            <th class="col-md-4">Dynatrace entities</th>
+                            <td>
+                                <div class="col-md-11" id="global-dynatrace-entity">{{createLabels application.dynatraceEntities}}</div>
+                            {{#if userHasPermissionForApplication}}
+                                <i class="fa fa-pencil reactive-table-icon col-md-1 " id="edit-global-dynatrace-entity" aria-hidden="true"></i>
+                            {{/if}}
+                                <div id="global-dynatrace-entity-hidden" style="display: none;">
+                                    {{#each application.dynatraceEntities}}
+                                        <div class="dynatrace-entity global" id="{{id}}">{{label}}</div>
+                                    {{/each}}
+                                </div>
+
+
+                            </td>
+                        </tr>
+                    {{/if}}
+
+                </tbody>
+            </table>
+        {{#each testEnvironments}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Settings for test environment <span class="break-word label label-default" style="margin:5px;">{{name}}</span>{{#if userHasPermissionForApplication}} <span class="pull-right"><i test-environment="{{name}}" id="remove-test-environment" class="fa fa-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Remove test environment"></i></span>{{/if}}
+
+            </div>
+            <div class="panel-body">
+                <table class="table test-run-information__table">
+                    <tbody>
+
+                    <tr>
+                        <th class="{{#unless tracingConfigured}}tracing-not-configured{{/unless}} col-md-4">Tracing service name</th>
+                        <td>
+                            <div>
+                            {{#if tracingConfigured}}
+                                <div class="col-md-11" >{{tracingService}}</div>
+                            {{#if userHasPermissionForApplication}}
+                                <i class="fa fa-pencil reactive-table-icon col-md-1" id="edit-test-environment-tracing-service" aria-hidden="true"></i>
+                            {{/if}}
+                            {{ else }}
+                                <div class="col-md-12 tracing-not-configured">No tracing has been configured</div>
+                            {{/if}}
+                            </div>
+
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th class="{{#unless pyroscopeConfigured}}pyroscope-not-configured{{/unless}} col-md-4">Pyroscope settings</th>
+                        <td>
+                            <div>
+                            {{#if pyroscopeConfigured}}
+                                <div class="col-md-11">
+                                    <span id="test-environment-pyroscope-application">{{pyroscopeApplication}}</span>
+                                    <span id="test-environment-pyroscope-profiler"> {{pyroscopeProfiler}}</span>
+                                </div>
+                            {{#if userHasPermissionForApplication}}
+                                <i class="fa fa-pencil reactive-table-icon col-md-1" id="edit-test-environment-pyroscope-application" aria-hidden="true"></i>
+                            {{/if}}
+                            {{ else }}
+                                <div class="col-md-12 pyroscope-not-configured">No Pyroscope instance has been configured</div>
+                            {{/if}}
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {{#if dynatraceConfigured}}
+                        <tr>
+                            <th class="col-md-4">Dynatrace entities</th>
+                            <td>
+                                <div class="col-md-11" >{{createLabels dynatraceEntities}}</div>
+                            {{#if userHasPermissionForApplication}}
+                                <i class="fa fa-pencil reactive-table-icon col-md-1" id="edit-test-environment-dynatrace-entity" aria-hidden="true"></i>
+                            {{/if}}
+                                <div id="test-environment-dynatrace-entity" style="display: none;">
+                                    {{#each dynatraceEntities}}
+                                        <div class="dynatrace-entity test-environment" id="{{id}}">{{label}}</div>
+                                    {{/each}}
+                                </div>
+                            </td>
+                        </tr>
+                    {{/if}}
+                </tbody>
+                </table>
+                {{#each testTypes}}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Settings for test environment <span class="break-word label label-default" style="margin:5px;">{{../name}}</span>| workload <span class="break-word label label-default" style="margin:5px;">{{name}}</span> {{#if userHasPermissionForApplication}}<span class="pull-right"><i test-environment="{{../name}}" test-type="{{ name }}" id="remove-test-environment-workload" class="fa fa-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Remove workload"></i></span>{{/if}}
+
+                        </div>
+                        <div class="panel-body">
+                            <table class="table test-run-information__table">
+                                <tbody>
+
+                                <tr>
+                                    <th class="{{#unless tracingConfigured}}tracing-not-configured{{/unless}} col-md-4">Tracing service name</th>
+                                    <td>
+                                        <div>
+                                        {{#if tracingConfigured}}
+                                            <div test-environment="{{../name}}" class="col-md-11" >{{tracingService}}</div>
+                                            {{#if userHasPermissionForApplication}}
+                                                <i test-environment="{{../name}}" class="fa fa-pencil reactive-table-icon col-md-1" id="edit-workload-tracing-service" aria-hidden="true"></i>
+                                            {{/if}}
+                                        {{ else }}
+                                            <div class="col-md-12 tracing-not-configured">No tracing has been configured</div>
+                                        {{/if}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="{{#unless pyroscopeConfigured}}pyroscope-not-configured{{/unless}} col-md-4">Pyroscope settings</th>
+                                    <td>
+                                        <div>
+                                        {{#if pyroscopeConfigured}}
+                                            <div class="col-md-11">
+                                                <span test-environment="{{../name}}" id="workload-pyroscope-application">{{pyroscopeApplication}}</span>
+                                                <span test-environment="{{../name}}" id="workload-pyroscope-profiler"> {{pyroscopeProfiler}}</span>
+                                            </div>
+                                            {{#if userHasPermissionForApplication}}
+                                                <i test-environment="{{../name}}" class="fa fa-pencil reactive-table-icon col-md-1" id="edit-workload-pyroscope-application" aria-hidden="true"></i>
+                                            {{/if}}
+                                        {{ else }}
+                                            <div class="col-md-12 pyroscope-not-configured">No Pyroscope instance has been configured</div>
+                                        {{/if}}
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+                                {{#if dynatraceConfigured}}
+                                    <tr>
+                                        <th class="col-md-4">Dynatrace entities</th>
+                                        <td>
+                                            <div test-environment="{{../name}}" class="col-md-11" >{{createLabels dynatraceEntities}}</div>
+                                        {{#if userHasPermissionForApplication}}
+                                                <i test-environment="{{../name}}" class="fa fa-pencil reactive-table-icon col-md-1" id="edit-workload-dynatrace-entity" aria-hidden="true"></i>
+                                        {{/if}}
+                                            <div id="workload-dynatrace-entity" style="display: none;">
+                                                {{#each dynatraceEntities}}
+                                                    <div class="dynatrace-entity workload" id="{{id}}">{{label}}</div>
+                                                {{/each}}
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                {{/if}}
+                                <tr>
+                                    <th class="col-md-4">Use static comparison thresholds to pass or fail a test run</th>
+                                    <td>
+                                        <div>
+                                            <div class="form-check">
+                                                <input test-environment="{{../name}}" class="{{#if userHasPermissionForApplication}}active{{/if}}form-check-input" type="checkbox" checked="{{autoCompareTestRuns}}" id="autoCompareTestRunsCheckbox" >
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th class="col-md-4">Baseline test run</th>
+                                    <td>
+                                        <div>
+                                            <div test-environment="{{../name}}" class=" col-md-11" >{{baselineTestRun}}</div>
+                                            {{#if userHasPermissionForApplication}}
+                                                <i test-environment="{{../name}}" class="fa fa-pencil reactive-table-icon col-md-1" id="edit-baseline-test-run" aria-hidden="true"></i>
+                                            {{/if}}
+                                        </div>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-md-4">Enable ADAPT</th>
+                                    <td>
+                                        <div>
+                                            <div class="form-check">
+                                                <input test-environment="{{../name}}" class="{{#if userHasPermissionForApplication}}active{{/if}}form-check-input" type="checkbox" checked="{{runAdapt}}" id="runAdaptCheckbox" >
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                        <th class="col-md-4">Use ADAPT results to pass or fail a test run</th>
+                                    <td>
+                                        <div>
+                                            <div class="form-check">
+                                                <input test-environment="{{../name}}" class="{{#if userHasPermissionForApplication}}active{{/if}}form-check-input" type="checkbox" checked="{{enableAdapt}}" id="enableAdaptCheckbox">
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-md-4">Create snapshots for Grafana dashboards</th>
+                                    <td>
+                                        <div>
+                                            <div class="form-check">
+                                                <input test-environment="{{../name}}" class="{{#if userHasPermissionForApplication}}active{{/if}}form-check-input" type="checkbox" checked="{{autoCreateSnapshots}}" id="autoCreateSnapshotsCheckbox" >
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+<!--                                <tr>-->
+<!--                                    <th class="col-md-4">Difference threshold</th>-->
+<!--                                    <td>-->
+<!--                                        <div class="form-check">-->
+<!--                                            <input test-environment="{{../name}}" class="{{#if userHasPermissionForApplication}}active{{/if}}form-check-input" type="text"  id="difference-threshold" value="{{differenceScoreThreshold}}">-->
+<!--                                        </div>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+            {{/each}}
+            <div class="text-right">
+                <div type="button" id="delete-sut" class="btn btn-danger perfana-label perfana-btn">Delete</div>
+                <div type="button" class="btn btn-primary perfana-label back perfana-btn">Back</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+
+<template name="tracingServiceModal">
+    <div class="modal fade" id="tracing-service-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Tracing service name</h4>
+                </div>
+
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="tracing-service" value="{{tracingService}}" placeholder="Add service name as used in tracing app">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-default" id="save-tracing-service">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="pyroscopeApplicationModal">
+    <div class="modal fade" id="pyroscope-application-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Pyroscope settings</h4>
+                </div>
+
+                <div class="modal-body">
+                    <label>Service name</label>
+                    <input type="text" class="form-control" id="pyroscope-application" value="{{pyroscopeApplication}}" placeholder="Add application name as used in Pyroscope">
+                    <label style="margin-top: 5px;">Profiler</label>
+                    <div  id="pyroscope-profiler">
+                        <select class="form-control">
+                            {{#each pyroscopeProfilerOptions}}
+                                <option value="{{this.value}}" {{isSelectedpyrPscopeProfilerOption this.label ../pyroscopeProfiler }}>{{this.label}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-default" id="save-pyroscope-application">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="dynatraceEntityModal">
+    <div class="modal fade" id="dynatrace-entity-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Dynatrace service</h4>
+                </div>
+
+                <div class="modal-body">
+                    {{>dynatraceSearchBox dynatraceEntities=this.dynatraceEntities}}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-default" id="save-dynatrace-entity">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="baselineTestRunModal">
+    <div class="modal fade" id="baseline-testrun-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Baseline test run</h4>
+                </div>
+
+                <div class="modal-body">
+                    {{>testRunSearchBox systemUnderTestSettings=true application=this.application testEnvironment=this.testEnvironment testType=this.testType }}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-default" id="save-baseline-test-run">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

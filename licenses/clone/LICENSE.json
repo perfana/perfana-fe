@@ -1,0 +1,7 @@
+{
+  "name": "clone",
+  "version": "^2.1.2",
+  "license": "MIT",
+  "repository": "git://github.com/pvorb/node-clone.git",
+  "homepage": "https://github.com/pvorb/node-clone#readme"
+}

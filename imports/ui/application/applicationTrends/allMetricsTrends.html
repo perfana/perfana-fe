@@ -1,0 +1,57 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="allMetricsTrends">
+    <div class="well__heading col-md-12">
+      <div class="adapt-filters col-md-12">
+        <div class="adapt-filters  col-md-3">
+          {{> trendsMetricFilter }}
+        </div>
+        <div class="col-md-3">
+          {{> classificationFilter classifications=classifications }}
+        </div>
+        <div class="col-md-3">
+              {{> selectPeriodFrom }}
+        </div>
+        <div class="col-md-3">
+              {{> selectAggregation }}
+        </div>
+
+      </div>
+    </div>
+    {{> reactiveTable class="table" collection=metrics fields=fields settings=settings rowClass=rowClass selectedMetricName=selectedMetricName }}
+    <div class="metric-details col-md-12">
+        <div>
+            {{> visualizeTrends showTitle=true metric=metric periodTimestamp=periodTimestamp aggregation=aggregation adaptEnabled=adaptEnabled}}
+        </div>
+    </div>
+</template>
+<template name="trendsMetricFilter">
+  <label for="metricNameFilter">Metric</label>
+  {{> reactiveTableFilter id="metricNameFilter" fields=metricFilterFields  }}
+</template>
+<!--<template name="panelFilter">-->
+<!--  <label for="panelFilter">Panel</label>-->
+<!--  {{> reactiveTableFilter id="panelFilter" fields=panelFilterFields }}-->
+<!--</template>-->
+<!--<template name="dashboardFilter">-->
+<!--  <label for="dashboardFilter">Dashboard</label>-->
+<!--  {{> reactiveTableFilter id="dashboardFilter" fields=dashboardFilterFields }}-->
+<!--</template>-->
+
+<template name="noTrendMetrics">
+  <p style="margin-top: 10px;">No metrics found</p>
+</template>

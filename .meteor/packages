@@ -1,0 +1,86 @@
+# Meteor packages used by this project, one per line.
+# Check this file (and the other files in this directory) into your repository.
+#
+# 'meteor add' and 'meteor remove' will edit this file for you,
+# but you can also edit it by hand.
+
+meteor-base@1.5.1             # Packages every Meteor app needs to have
+mobile-experience@1.1.0       # Packages for a great mobile UX
+mongo@1.16.7                   # The database Meteor supports right now
+blaze-html-templates@1.0.4    # Compile .html files into Meteor Blaze views
+reactive-var@1.0.12            # Reactive variable for tracker
+tracker@1.3.2                 # Meteor's client-side reactive programming library
+
+standard-minifier-css@1.9.2   # CSS minifier run for production mode
+es5-shim@4.8.0                # ECMAScript 5 compatibility for older browsers.
+ecmascript@0.16.7              # Enable ECMAScript2015+ syntax in app code
+
+check@1.3.2
+
+dburles:collection-helpers
+
+aldeed:autoform@5.8.1
+aldeed:autoform-bs-datetimepicker@1.0.7
+aldeed:collection2@2.10.0
+aldeed:collection2-core@1.2.0
+aldeed:delete-button@2.0.0
+aldeed:schema-deny@1.1.0
+aldeed:schema-index@1.1.1
+aldeed:simple-schema@1.5.4
+aldeed:template-extension@4.1.0
+
+nicolaslopezj:reactive-templates@1.2.1
+
+reactive-dict@1.3.1
+
+accounts-base@2.2.8
+accounts-google@1.4.0
+accounts-oauth@1.4.2
+accounts-password@2.3.4
+accounts-ui@1.4.2
+accounts-ui-unstyled@1.7.0
+
+dynamic-import@0.7.3
+less@3.0.1
+kadira:blaze-layout
+session@1.2.1
+mizzao:bootboxjs
+aslagle:reactive-table
+momentjs:moment
+flawless:meteor-toastr
+service-configuration@1.3.1
+manuel:reactivearray
+simple:reactive-method
+markdown
+underscore@1.0.13
+natestrauser:select2
+perfana:mentions
+perfana:variable-mentions
+east5th:package-scan
+jquery
+pfafman:filesaver
+tsega:bootstrap3-datetimepicker
+perfana:bootstrap3-assets
+perfana:bootstrap3
+peppelg:bootstrap-3-modal
+perfana:autoform-bootstrap-modal
+perfana:universe-selectize
+perfana:universe-autoform-select
+ostrio:logger
+perfana:loggerconsole
+perfana:fontawesome
+perfana:flow-router-helpers
+perfana:flow-router-breadcrumb
+perfana:flow-router
+standard-minifier-js@2.8.1
+perfana:oidc
+perfana:accounts-oidc
+perfana:roles
+perfana-useraccounts:core
+perfana-useraccounts:bootstrap
+littledata:synced-cron
+matb33:collection-hooks
+ccorcos:subs-cache
+reywood:publish-composite
+tunguska:reactive-aggregate
+perak:markdown

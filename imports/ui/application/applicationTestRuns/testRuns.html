@@ -1,0 +1,84 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRuns">
+   <div class="perfana-content">
+       {{#if adaptBaselineModeEnabled}}
+           <div class="alert alert-success">
+               <strong>ADAPT baseline mode</strong>
+               <p>ADAPT baseline mode is enabled. In this mode ADAPT will not track any differences. Run a number test runs against the same version of the System Under Test to create a solid baseline.</p>
+               <div class="text-right">
+                   <div type="button" class="btn btn-primary perfana-label perfana-btn" id="disable-baseline-mode">Disable baseline mode</div>
+               </div>
+           </div>
+       {{/if}}
+       <div role="tabpanel" class="tab-pane" id="configuration">
+           <ul class="nav nav-tabs" role="tablist">
+               <li role="presentation" class="{{#if tabActive '#testruns'  }}active{{/if}}" ><a href="#testruns" role="tab" data-toggle="tab">Test runs</a></li>
+                    {{#if workloadSelected }}
+                        {{#if multipleTestRuns}}
+                            <li role="presentation" class="{{#if tabActive '#trends'  }}active{{/if}}"><a href="#trends" role="tab" data-toggle="tab">Trends</a></li>
+                        {{ else }}
+                            <li role="presentation" class="disabled" data-toggle="tooltip" data-placement="top" title="Trends are available if at least one Service Level Indicator has been configured and multiple tests have run"><a href="#no-trends" role="tab" data-toggle="tab">Trends</a></li>
+                         {{/if}}
+                    {{ else }}
+                        <li role="presentation" class="disabled" data-toggle="tooltip" data-placement="top" title="Select workload to view trends."><a href="#no-trends" role="tab" data-toggle="tab">Trends</a></li>
+                    {{/if}}
+                    {{#if workloadSelected }}
+                       {{#if hasUnresolvedRegression}}
+                           <li role="presentation" class="{{#if tabActive '#unresolved-regression'  }}active{{/if}}"><a href="#unresolved-regression" role="tab" data-toggle="tab">Unresolved regression <span class="badge badge-danger">{{unresolvedRegressionCount}}</span></a></li>
+                       {{/if}}
+                    {{/if}}
+           </ul>
+           <div class="tab-content">
+               {{#if tabActive '#testruns' }}
+                    <div role="tabpanel" class="tab-pane active" id="testruns">
+                           <div>
+                               {{> testRunFilter}}
+                           </div>
+                            {{#if invalidConfiguration}}
+                                <div class="alert alert-danger">
+                                    <strong>Invalid configuration</strong>
+                                    <p>This test has invalid Service Level Indicator configuration</p>
+                                    <div class="text-right">
+                                        <div type="button" id="open-sli" class="btn btn-primary perfana-label perfana-btn ">View Service Level Indicators</div>
+                                     </div>
+                                </div>
+                            {{/if}}
+                           <div>
+                               {{> runningTests}}
+                           </div>
+                           <div>
+                               {{> recentTestRuns}}
+                           </div>
+                   </div>
+               {{/if}}
+               {{#if tabActive '#trends' }}
+                   <div role="tabpanel" class="tab-pane active" id="trends">
+                       {{> allMetricsTrends}}
+                   </div>
+               {{/if}}
+               {{#if tabActive '#unresolved-regression' }}
+                   <div role="tabpanel" class="tab-pane active" id="unresolved-regression">
+                       {{> unresolvedRegressionOverview unresolvedRegression=unresolvedRegression }}
+                   </div>
+               {{/if}}
+           </div>
+      </div>
+   </div>
+</template>
+
+

@@ -1,0 +1,7 @@
+{
+  "name": "nodejs-base64",
+  "version": "^2.0.0",
+  "license": "Unlicense",
+  "repository": "git+https://github.com/catcher-in-the-try/nodejs-base64.git",
+  "homepage": "https://github.com/catcher-in-the-try/nodejs-base64#readme"
+}

@@ -1,0 +1,65 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="applicationReportSpecs">
+    <div class="perfana-content">
+        {{> perfanaBreadcrumb}}
+
+        <div class="well">
+            <h5 class="well__heading">Reporting template for <span class="break-word label label-default" style="margin:5px;">{{application}}</span> | Environment <span class=" break-word label label-default" style="margin:5px;">{{testEnvironment}}</span> | Workload <span class=" break-word label label-default" style="margin:5px;">{{testType}}</span>
+            </h5>
+
+            <div>
+                {{> reactiveTable class="filter-table table" collection=applicationReportSpecs fields=fields settings=settings}}
+            <div class="text-right">
+                 <div type="button" class="btn btn-primary perfana-label back perfana-btn">Back</div>
+
+                {{#if userHasPermissionForApplication}}
+
+                    {{#if hasApplicationDashboards}}
+                        <div type="button" class="btn btn-primary perfana-label add-report-panel perfana-btn">Add panel</div>
+
+                        {{#if reportPanelsHaveBeenChanged}}
+                            {{#if hasTestRunsWithReports}}
+                                <div type="button" class="btn btn-primary perfana-label apply-to-all-reports perfana-btn pull-right">Apply to all</div>
+                                <div type="button" class="btn btn-primary perfana-label apply-to-latest-report perfana-btn">Apply to latest</div>
+                            {{/if}}
+                        {{/if}}
+                    {{ else }}
+                        <div type="button" class="btn btn-primary perfana-label  perfana-btn">Add dashboard</div>
+                    {{/if}}
+                  {{/if}}
+            </div>
+            </div>
+
+        </div>
+<!--        {{> reportRequirements}}-->
+    </div>
+</template>
+
+
+
+<template name="noApplicationReportSpecs">
+    {{#if userHasPermissionForApplication}}
+        {{#if hasApplicationDashboards}}
+            <p>No report specification found, please add a panel.</p>
+        {{ else }}
+            <p>No Grafana dashboards have been linked to this application / test environment, please add one</p>
+        {{/if}}
+    {{ else }}
+        <p>You are not allowed to add or edit report panels for this system under test</p>
+    {{/if}}
+</template>

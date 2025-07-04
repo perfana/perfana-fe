@@ -1,0 +1,49 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="reportRequirements">
+    <div class="well">
+        <h5 class="well__heading">Report requirements</h5>
+
+        <div>
+            {{> reactiveTable class="filter-table table" collection=applicationReportRequirements fields=fields settings=settings}}
+            {{#if userIsAllowed}}
+            <div class="text-right">    
+                <div type="button" class="btn btn-primary perfana-label add-report-requirement perfana-btn">Add requirement</div>
+
+            <!--{{#afModalShow formId="addReportRequirement" collection="ReportRequirements" type="insert" backdrop="static" class="btn btn-primary perfana-label add-benchmark  perfana-btn pull-right"}}-->
+                <!--Add requirement-->
+                <!--{{/afModalShow}}-->
+                {{#if requirementsHaveBeenChanged}}
+                    {{#if hasTestRunsWithReports}}
+                        <div type="button" class="btn btn-primary perfana-label apply-requirements-to-all-reports perfana-btn">Apply to all</div>
+                        <div type="button" class="btn btn-primary perfana-label apply-requirements-to-latest-report perfana-btn">Apply to latest</div>
+                    {{/if}}
+                {{/if}}
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+</template>
+
+<template name="noReportRequirements">
+    {{#if userIsAllowed}}
+        <p>No report requirements found, please add one.</p>
+    {{else}}
+        <p>You are not allowed to add or edit key report requirements for this application</p>
+    {{/if}}
+</template>

@@ -1,0 +1,156 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunComments">
+       <div>
+           <div class="col-md-5 well comment__well">
+            {{#if commentsLoaded}}
+               {{> testRunCommentsList  }}
+            {{/if}}
+               <div class="text-right">
+                   <div class="btn btn-primary" title="Add comment" type="button" id="add-comment">Add comment</div>
+               </div>
+           </div>
+           {{#if hasComments }}
+               <div class="col-md-7 well  comment__well">
+                       {{#if commentSelected }}
+                            {{> testRunComment commentId=selectedCommentId }}
+                       {{ else }}
+                            <span>No comment selected</span>
+                       {{/if}}
+               </div>
+           {{/if}}
+       </div>
+</template>
+
+<template name="testRunComment">
+            <div class="comment">
+                <h4 class="">
+                  {{ comment.createdByUsername }} <small>added a comment on {{comment.dashboardLabel}}</small><br>
+                    <small>{{formatDateHelper comment.createdAt}}</small>
+                </h4>
+                <div class="comment__body">
+                    {{comment.content}}
+                </div>
+                {{#if hasGraphUrl}}
+                    {{#if testRunExpired}}
+                        <div class="comment__graph">
+                            <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                        </div>
+                    {{ else}}
+                        <div class="comment__graph">
+                            <iframe class="grafana-iframe-comments" src="{{graphUrl comment}}"  frameBorder="0"  width="100%" height="600"></iframe>
+                        </div>
+                    {{/if}}
+                {{ else }}
+                    <div style="width: 100%;  height: 600px;">
+                        <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                    </div>
+                {{/if}}
+                <div class="comment__buttons">
+                    {{#if commentByCurrentUser}}
+                    <div class="text-right">
+                        <button class="btn btn-danger" type="button" id="delete-comment">Delete</button>
+                    </div>
+                    {{/if}}
+                </div>
+                <div class="comment__reply">
+                    {{#each comment.replies}}
+                        <h4 class="comment__reply-heading">
+                            {{ createdByUsername }} <small>replied</small><br>
+                            <small>{{formatDateHelper createdAt}}</small>
+                        </h4>
+                        <div class="comment__reply-body">
+                            {{content}}
+                        </div>
+                        {{#if replyByCurrentUser this}}
+                            <div class="text-right">
+                                <button class="btn btn-danger" reply-index="{{@index}}" type="button" id="delete-reply" >Delete</button>
+                            </div>
+                        {{/if}}
+                    {{/each}}
+                </div>
+                {{#if showReplyBox}}
+                    {{> commentBox reply=true }}
+                {{/if}}
+            </div>
+</template>
+
+<template name="commentBox">
+<!--    <div class="panel-heading">-->
+<!--        <h5>Add {{ commentBoxHeader}}</h5>-->
+<!--    </div>-->
+    <div class="panel-body">
+
+        {{#if panelIsSet}}
+            <textarea class="form-control comment-text-area" id="modal-comment-text" placeholder="Comment on metric" rows="3"></textarea>
+        {{ else }}
+            {{#if dashboardIsSet}}
+                <textarea class="form-control comment-text-area" id="modal-comment-text" placeholder="Comment on this dashboard" rows="3"></textarea>
+            {{else}}
+                <textarea class="form-control comment-text-area" id="{{#if reply}}reply-text{{ else }}comment-text{{/if}}" placeholder="{{commentPlaceholder}}" rows="3"></textarea>
+            {{/if}}
+        {{/if}}
+        {{#unless reply}}
+            {{#if hasNotificationsChannels}}
+                <div class="dashboard__searchbox">
+                    {{> notificationsChannelsSearchBox }}
+                </div>
+            {{/if}}
+            {{# unless dashboardIsSet }}
+                <div class="dashboard__searchbox">
+                    {{> dashboardSearchBox }}
+                </div>
+            {{/unless}}
+            {{#if dashboardSelected}}
+                {{# if dashboardIsSet }}
+                    {{# unless panelIsSet }}
+                        <div class="panel__searchbox">
+                        {{> modalPanelSearchBox testRun=testRun}}
+                        </div>
+                    {{/unless}}
+                {{ else }}
+                    {{> panelSearchBox }}
+                {{/if}}
+            {{/if}}
+            {{#if panelSelected}}
+                {{#if hasGraphPreviewUrl}}
+                    {{#if testRunExpired}}
+                        <div>
+                            <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                        </div>
+                    {{ else}}
+                        <div>
+                            <iframe class="grafana-iframe comments-graph-preview" src="{{setTheme graphPreviewUrl}}"  frameBorder="0"  width="100%" height="600"></iframe>
+                        </div>
+                    {{/if}}
+                {{ else }}
+                    <div style="width: 100%;  height: 600px;">
+                        <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                    </div>
+                {{/if}}
+
+            {{/if}}
+        {{/unless}}
+            <div class="pull-right button__group">
+            {{#if reply}}
+                <button class="btn btn-primary" type="button" id="submit-reply">Submit reply</button>
+            {{else}}
+                 <button class="btn btn-primary" type="button" id="submit-comment">Submit comment</button>
+            {{/if}}
+            </div>
+    </div>
+</template>

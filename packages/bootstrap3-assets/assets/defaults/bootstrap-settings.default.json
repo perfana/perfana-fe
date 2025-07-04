@@ -1,0 +1,23 @@
+{
+  "less": {
+    "customVariables": false,
+
+    "exposeMixins": false,
+
+    "compile": true,
+
+    "modules": {
+      /*LESS_MODULES*/
+    }
+  },
+
+  "javascript": {
+    "expose": false,
+
+    "modules": {
+      /*JS_MODULES*/
+    }
+  },
+
+  "version": 2
+}

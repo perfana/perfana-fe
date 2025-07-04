@@ -1,0 +1,7 @@
+{
+  "name": "@babel/preset-env",
+  "version": "^7.26.9",
+  "license": "MIT",
+  "repository": "https://github.com/babel/babel.git",
+  "homepage": "https://babel.dev/docs/en/next/babel-preset-env"
+}

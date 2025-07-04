@@ -1,0 +1,194 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunReportPage">
+    <div class="col-md-11">
+        <p>
+            {{> perfanaBreadcrumb}}
+        </p>
+    </div>
+    <p>
+      {{> testRunReport testRun=testRun}}
+    </p>
+</template>
+
+
+<template name="testRunReport">
+    {{#if snapshotsIncomplete}}
+        <div class="alert alert-danger">
+            <p>One or more graphs in this report are not available. Got to <span class="go-to-manage-tab mixin-link">Manage</span> tab to create Grafana snapshots</p>
+        </div>
+    {{ else }}
+        {{#if reportWillExpire }}
+            <div class="alert alert-warning">
+                <p>This report will be no longer available after {{testRunExpiry}}. To persist it click <a class="persist-report mixin-link">here</a></p>
+            </div>
+        {{/if}}
+    {{/if}}
+    <div class="row">
+        <div class="col-md-6">
+            {{> testRunReportInformation testRun=testRun}}
+        </div>
+        <div class="col-md-6">
+            {{#if hasReportAnnotations }}
+                {{>testRunManagementSummary testRun=testRun}}
+            {{/if}}
+        </div>
+   </div>
+   <div class="row">
+       {{#if testRunHasEvents }}
+           <div class="col-md-6">
+                  {{>testRunEvents testRun=testRun}}
+           </div>
+       {{/if}}
+       {{#if testRunHasAlerts }}
+           <div class="col-md-6">
+               {{>alerts testRun=testRun}}
+            </div>
+       {{/if}}
+   </div>
+    {{#if testRunHasCompareResults}}
+        {{#if hasReportComparisons}}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="perfana-summery-header">Compared to other test runs</h5>
+                </div>
+                <div class="panel-body">
+                    {{#each testRun.reportComparisons}}
+                        <div class="well" >
+                        {{#if reportComparisonHasAnnotation}}
+                            <h5 class="report__panel-annotations-top">Description</h5>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="{{#if userHasPermissionForApplication}}show-pointer{{/if}}" id="edit-compare-result-annotation" data-toggle="tooltip" data-placement="top" title="{{#if userHasPermissionForApplication}}Click to edit{{else}}Log in with authorised user to edit{{/if}}">
+                                            {{annotation}}
+                                            {{#if userHasPermissionForApplication}}
+                                                <i class="fa fa-pencil add-compare-result-annotation pull-right" aria-hidden="true"></i>{{/if}}
+                                        </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        {{ else }}
+                            {{#if userHasPermissionForApplication}}
+                                <div id="add-annotations">
+                                    <!--                    <i class="fa fa-plus add-annotation" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Add annotation"></i>-->
+                                    <a id="add-compare-result-annotation" class="add-compare-result-annotation report__panel-annotations-add-annotations" href="">Add description</a>
+                                </div>
+                            {{/if}}
+                        {{/if}}
+                        {{> compareResultDetails compareResultLabel=compareResultLabel baselineTestRunId=baselineTestRunId }}
+                        </div>
+                    {{/each}}
+                {{#if userHasPermissionForApplication}}
+                    <div class="text-right">
+                        <div type="button" class="btn btn-primary perfana-label select-report-comparison perfana-btn">Add</div>
+                    </div>
+                {{/if}}
+                </div>
+            </div>
+        {{ else }}
+            {{#if userHasPermissionForApplication}}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 class="perfana-summery-header">Compared to other test runs</h5>
+                    </div>
+                    <div class="panel-body">
+                        <p>No comparison results included in report</p>
+
+                        <div class="text-right">
+                            <div type="button" class="btn btn-primary perfana-label select-report-comparison perfana-btn">Add</div>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+        {{/if}}
+    {{/if}}
+   <div class="reports">
+        {{#each testReportPanels }}
+           <div class="report__panel panel panel-default">
+            {{> testRunReportPanel}}
+           </div>
+        {{/each}}
+    </div>
+    {{#if hasComments}}
+        <div class="comments">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="perfana-summery-header">Comments</h5>
+                </div>
+                <div class="panel-body">
+                    {{#each testRunComments }}
+                        <div class="report__panel panel panel-default">
+                            {{> testRunCommentPanel}}
+                        </div>
+                    {{/each}}
+
+                </div>
+            </div>
+        </div>
+    {{/if}}
+</template>
+
+
+<template name="testRunReportComparisonsModal">
+    <div class="modal fade" id="test-run-report-comparisons-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add compare results</h4>
+                </div>
+                <div class="modal-body" style="padding:10px;">
+                    {{> compareResultsSearchBox testRun=testRun }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"  id="save-test-run-report-comparisons">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="testRunReportComparisonAnnotation">
+    <div class="modal fade" id="testreport-comparison-annotations-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Comparison annotation</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <textarea id="annotations" class="form-control testrun-annotation">{{annotation}}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-testrun-comparison-annotations">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+
+

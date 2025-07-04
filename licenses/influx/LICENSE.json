@@ -1,0 +1,7 @@
+{
+  "name": "influx",
+  "version": "^5.6.3",
+  "license": "MIT",
+  "repository": "git+https://github.com/node-influx/node-influx.git",
+  "homepage": "https://github.com/node-influx/node-influx#readme"
+}

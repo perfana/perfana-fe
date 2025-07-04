@@ -1,0 +1,7 @@
+{
+  "name": "tippy.js",
+  "version": "^6.3.7",
+  "license": "MIT",
+  "repository": "git+https://github.com/atomiks/tippyjs.git",
+  "homepage": "https://atomiks.github.io/tippyjs/"
+}

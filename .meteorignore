@@ -1,0 +1,6 @@
+scripts/**
+licenses/**
+**/__tests__/**/*.test.js
+**/*.test.js
+tests/
+**/__mocks__/** 

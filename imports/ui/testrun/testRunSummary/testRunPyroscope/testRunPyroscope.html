@@ -1,0 +1,125 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunPyroscope">
+
+<!--    <div class="well">-->
+
+    <div role="tabpanel" class="tab-pane" id="pyroscope-tags">
+            <ul class="nav nav-tabs pyroscope-tags" role="tablist">
+                <li role="presentation" class="active"><a href="#single" role="tab" data-toggle="tab">Single view <i id="pyroscope-single-link"  class="fa fa-external-link perfana-pyroscope-external-link reactive-table-icon" data-toggle="tooltip" data-placement="top" title="Open in Pyroscope"></i></a></li>
+                {{# if multipleTestRuns }}
+<!--                    <li role="presentation" ><a href="#comparison" role="tab" data-toggle="tab">Comparison view {{#if pyroscopeBaselineSelected}}<i id="pyroscope-compare-link"  class="fa fa-external-link perfana-pyroscope-external-link reactive-table-icon" data-toggle="tooltip" data-placement="top" title="Open in Pyroscope"></i>{{/if}}</a></li>-->
+                    <li role="presentation" ><a href="#diff" role="tab" data-toggle="tab">Diff view {{#if pyroscopeBaselineSelected}}<i id="pyroscope-diff-link"  class="fa fa-external-link perfana-pyroscope-external-link reactive-table-icon" data-toggle="tooltip" data-placement="top" title="Open in Pyroscope"></i>{{/if}}</a></li>
+                {{/if}}
+            </ul>
+            {{#unless pyroscopeTabActive 'single' }}
+                {{> selectPyroscopeBaseline }}
+            {{/unless}}
+    </div>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="single">
+                {{#if pyroscopeTabActive 'single' }}
+                    <iframe class="pyroscope-iframe" src="{{pyroscopeUrl}}"  frameBorder="0"  width="100%" height="2000"></iframe>
+                {{/if}}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="comparison">
+                {{#if pyroscopeTabActive 'comparison' }}
+                    {{#if pyroscopeBaselineSelected}}
+                        <iframe class="pyroscope-iframe" src="{{pyroscopeCompareUrl}}"  frameBorder="0"  width="100%" height="2000"></iframe>
+                    {{/if}}
+                {{/if}}
+            </div>
+             <div role="tabpanel" class="tab-pane" id="diff">
+                 {{#if pyroscopeTabActive 'diff' }}
+                    {{#if pyroscopeBaselineSelected}}
+                        <iframe class="pyroscope-iframe" src="{{pyroscopeDiffUrl}}"  frameBorder="0"  width="100%" height="2000"></iframe>
+                    {{/if}}
+               {{/if}}
+            </div>
+        </div>
+<!--    </div>-->
+<!--        <div class="panel-group test-run-pyroscope" id="pyroscope-single-accordion">-->
+<!--            <div class="panel panel-default">-->
+<!--                <div class="panel-heading">-->
+<!--                    <h4 class="panel-title">-->
+<!--                        <div class="drilldown-accordion-toggle row perfana-panel-title" data-toggle="collapse"  href="#pyroscope-single-view">-->
+<!--                            <div>-->
+<!--                                {{#if singleViewCollapsed}}-->
+<!--                                    &lt;!&ndash;                                <div class="col-md-1 perfana-testrun-meta-data text-center">&ndash;&gt;-->
+<!--                                    <span><i class="fa fa-angle-right  perfana-traces-angle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i></span>-->
+<!--                                    &lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--                                {{ else }}-->
+<!--                                    &lt;!&ndash;                                <div class="col-md-1 perfana-testrun-meta-data text-center">&ndash;&gt;-->
+<!--                                    <span><i class="fa fa-angle-down perfana-traces-angle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i></span>-->
+<!--                                    &lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--                                {{/if}}-->
+<!--                                <span class="panel-title" >Single View</span>-->
+<!--                                <span class="pull-right"><i id="pyroscope-link"  class="fa fa-external-link perfana-traces-external-link" data-toggle="tooltip" data-placement="top" title="Open in Pyroscope"></i></span>-->
+
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </h4>-->
+<!--                </div>-->
+
+<!--                <div id="pyroscope-single-view" class="panel-collapse collapse single-collapse">-->
+<!--                {{#unless singleViewCollapsed}}-->
+<!--                    <iframe class="pyroscope-iframe" src="{{pyroscopeUrl}}"  frameBorder="0"  width="100%" height="2000"></iframe>-->
+<!--                {{/unless}}-->
+<!--                </div>-->
+<!--        </div>-->
+<!--        </div>-->
+<!--        <div class="panel-group test-run-pyroscope" id="pyroscope-compare-accordion">-->
+<!--            <div class="panel panel-default">-->
+<!--                <div class="panel-heading">-->
+<!--                    <h4 class="panel-title">-->
+<!--                        <div class="drilldown-accordion-toggle row perfana-panel-title" data-toggle="collapse"  href="#pyroscope-compare-view">-->
+<!--                            <div>-->
+<!--                                {{#if compareViewCollapsed}}-->
+<!--                                    &lt;!&ndash;                                <div class="col-md-1 perfana-testrun-meta-data text-center">&ndash;&gt;-->
+<!--                                    <span><i class="fa fa-angle-right  perfana-traces-angle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i></span>-->
+<!--                                    &lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--                                {{ else }}-->
+<!--                                    &lt;!&ndash;                                <div class="col-md-1 perfana-testrun-meta-data text-center">&ndash;&gt;-->
+<!--                                    <span><i class="fa fa-angle-down perfana-traces-angle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i></span>-->
+<!--                                    &lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--                                {{/if}}-->
+<!--                                <span class="panel-title" >Compare View</span>-->
+<!--                                <span class="pull-right"><i id="pyroscope-link"  class="fa fa-external-link perfana-traces-external-link" data-toggle="tooltip" data-placement="top" title="Open in Pyroscope"></i></span>-->
+
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </h4>-->
+<!--                </div>-->
+
+<!--                <div id="pyroscope-compare-view" class="panel-collapse collapse compare-collapse">-->
+<!--                {{#unless compareViewCollapsed}}-->
+<!--                    <h5 class="well__heading">Select baseline test run</h5>-->
+<!--                    {{> selectPyroscopeBaseline }}-->
+<!--                    <button id="diff-view" class="break-word  dynatrace-button">Diff view</button>-->
+<!--                    <button id="comparison-view" class="break-word  dynatrace-button">Comparison view</button>-->
+<!--                    {{#if pyroscopeBaselineSelected}}-->
+<!--                        <iframe class="pyroscope-iframe" src="{{pyroscopeCompareUrl}}"  frameBorder="0"  width="100%" height="2000"></iframe>-->
+<!--                    {{/if}}-->
+<!--                {{/unless}}-->
+<!--                </div>-->
+<!--        </div>-->
+<!--        </div>-->
+
+<!--   </div>-->
+</template>
+
+

@@ -1,0 +1,171 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunCheckResults">
+    <div class="panel panel-default">
+        <div class="panel-heading panel-heading-with-filter">
+            <h5 class="perfana-summery-header col-md-6">Service Level Objectives</h5>
+            {{#if showFilter}}
+                <div class="check-results-header col-md-4">
+                    <div class="row">
+                        <div class="input-group  check-results-filter">
+                            <input type="text" class="form-control" id="check-results-filter" placeholder="Type to filter" value="{{checkResultsFilter}}">
+                            <span class="input-group-addon" id="clear-check-results-filter"><i class="fa fa-times reactive-table-icon"></i></span>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+            <div class="failed-checks-only-filter col-md-4">
+                {{#if hasFailedChecks}}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked="{{showFailedChecksOnly}}" id="showFailedChecksOnly">
+                        <label class="form-check-label" for="showFailedChecksOnly">Show failed checks only</label>
+                    </div>
+                {{else}}
+                    {{#if showPassedChecksDetails}}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" checked="{{showPassedChecksDetails}}" id="showPassedChecksDetails">
+                            <label class="form-check-label" for="showPassedChecksDetails">Show details</label>
+                        </div>
+                    {{/if}}
+                {{/if}}
+            </div>
+        </div>
+        <div class="panel-body">
+            {{#if hasPanels}}
+                {{#if hasFailedChecks}}
+                    {{#each panels}}
+                        {{> testRunCheckResultsAccordion}}
+                    {{/each}}
+                {{else}}
+                    {{#if showPassedChecksDetails}}
+                        {{#each panels}}
+                            {{> testRunCheckResultsAccordion}}
+                        {{/each}}
+                    {{else}}
+                        <div class="all-check-passed"><span>All checks passed! <i class="fa fa-check reactive-table-icon"></i> <a id="show-check-details">show details</a></span></div>
+                    {{/if}}
+                {{/if}}
+            {{ else }}
+                {{#unless hasChecks}}
+                    <div class="all-check-passed">No Service Level Objectives on <a class="open-kpi-tab">Service Level Indicators</a> have been configured yet</div>
+                {{ else }}
+                    {{#if isInProgress}}
+                        <p>Checks are being evaluated ... Please go to <span class="go-to-manage-tab mixin-link">Manage</span> tab for more details</p>
+                    {{ else }}
+                        {{#if hasErrors}}
+                            <p>Something resulted in check results being not available. Please go to <span class="go-to-manage-tab mixin-link">Manage</span> tab for more details</p>
+                        {{/if }}
+                    {{/if}}
+                {{/unless}}
+            {{/if}}
+        </div>
+    </div>
+</template>
+
+<template name="testRunCheckResultsAccordion">
+    <div class="panel-group comparison-details-dashboards" id="dashboard-accordion-slo">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse" data-parent="#dashboard-accordion-slo" href="#dashboard-accordion-slo-{{slugify dashboardLabel}}-{{dashboardUid}}-{{panelId}}-{{benchmarkId}}">
+                            {{#if metricHeaderCollapsed}}
+                                <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                    <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                                </div>
+                            {{ else }}
+                                <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                    <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                                </div>
+                            {{/if}}
+<!--                        <div class="drilldown-accordion-toggle col-md-9 perfana-testrun-meta-data check-result-title" >{{dashboardLabel}} | {{humanReadablePanelTitle panelTitle}} | {{humanReadableEvaluateType evaluateType}}</div>-->
+                            <div class="drilldown-accordion-toggle col-md-9 perfana-testrun-meta-data check-result-title" >
+                                <span class="check-result-dashboard-title">{{dashboardLabel}}</span><br>
+                                <span class="check-result-panel-title">{{humanReadablePanelTitle panelTitle}}</span>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="col-md-4">
+                                    {{#if panelHasError this}}
+                                        <i class="fa fa-warning reactive-table-icon"  aria-hidden="true"></i>
+                                    {{else}}
+                                        {{#if resultsOK this}}
+                                            <i class="fa fa-check reactive-table-icon"  aria-hidden="true"></i>
+                                        {{else}}
+                                            <i class="fa fa-exclamation-circle reactive-table-icon"  aria-hidden="true"></i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+
+                                {{#if userHasPermissionForApplication}}
+                                    {{#unless isGenericCheck }}
+                                    <div class="col-md-4">
+                                        <i id="edit-benchmark" class="fa fa-pencil reactive-table-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit Service Level Indicator"></i>
+                                    </div>
+                                    {{/unless}}
+                                    <div class="col-md-4">
+                                        <i id="filter-series" class="fa fa-filter reactive-table-icon" style="font: 0.5em;" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter series"></i>
+                                    </div>
+                                {{/if}}
+                            </div>
+                        </div>
+                </h4>
+            </div>
+            <div id="dashboard-accordion-slo-{{slugify dashboardLabel}}-{{dashboardUid}}-{{panelId}}-{{benchmarkId}}" class="panel-collapse collapse metric-collapse">
+                {{#unless metricHeaderCollapsed }}
+                    <div class="panel-body">
+                        {{> testRunCheckResultsDetails panel=this }}
+                    </div>
+                {{/unless}}
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="testRunCheckResultsDetails">
+    {{#if testRunPanelHasRequirements}}
+        <div>
+            {{> requirementPanelContent panel=panel dashboardLabel=panel.dashboardLabel snapshotUrl=panel.snapshotUrl dashboardUid=panel.dashboardUid grafana=panel.grafana}}
+
+        </div>
+    {{/if}}
+<!--    <hr class="hr-check-results">-->
+<!--    {{# if notTable}}-->
+<!--        {{#if hasSnapshotPanelUrl}}-->
+<!--            {{#if testRunExpired}}-->
+<!--                <div style="width: 100%;  height: 500px;">-->
+<!--                    <p class="test-run-expired">Test run has expired, graph no longer available</p>-->
+<!--                </div>-->
+<!--            {{ else }}-->
+<!--                <div style="text-align:center">-->
+<!--                    <iframe height="500px" width="100%" src="{{themeSnapshotPanelUrl panel.snapshotPanelUrl}}" frameborder="0" allowfullscreen=""></iframe>-->
+<!--                </div>-->
+<!--            {{/if}}-->
+<!--        {{ else }}-->
+<!--            <div style="width: 100%;  height: 600px;">-->
+<!--                <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>-->
+<!--            </div>-->
+<!--        {{/if}}-->
+<!--    {{/if}}-->
+</template>
+
+
+<template name="visualizePanelMetrics">
+
+<!--    <div id="chart-container">-->
+<!--        <svg id="line-chart-check-result-{{applicationDashboardId}}-{{panelId}}-{{slugify metricName}}"></svg>-->
+<!--    </div>-->
+    <div id='line-chart-check-result-{{applicationDashboardId}}-{{panelId}}-{{slugify metricName}}'></div>
+</template>

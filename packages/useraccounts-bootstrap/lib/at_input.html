@@ -1,0 +1,70 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="atInput">
+    {{> Template.dynamic template=templateName}}
+</template>
+
+<template name="atTextInput">
+  <div class="at-input form-group {{#if isValidating}}validating{{/if}} {{#if hasError}}has-error{{/if}} {{#if hasSuccess}}has-success{{/if}} {{#if feedback}}has-feedback{{/if}}">
+    <label class="control-label {{#unless showLabels}}sr-only{{/unless}}" for="at-field-{{_id}}">
+      {{displayName}} {{#unless required}}{{optionalText}}{{/unless}}
+    </label>
+    <input type="{{type}}" class="form-control" id="at-field-{{_id}}" name="at-field-{{_id}}" placeholder="{{placeholder}}" autocapitalize="none" autocorrect="off">
+    {{#if hasIcon}}
+      <span class="{{iconClass}} form-control-feedback"></span>
+    {{/if}}
+    <span class="help-block {{#unless hasError}}hide{{/unless}}">{{errorText}}</span>
+  </div>
+</template>
+
+<template name="atCheckboxInput">
+  <div class="at-input checkbox">
+    <label for="at-field-{{_id}}">
+      <input type="{{type}}" id="at-field-{{_id}}" name="at-field-{{_id}}" {{disabled}}>
+      {{displayName}}
+    </label>
+  </div>
+</template>
+
+<template name="atSelectInput">
+  <div class="at-input field">
+    <label>{{displayName}}</label>
+    <select class="form-control" id="at-field-{{_id}}" name="at-field-{{_id}}">
+      {{#each values}}
+        <option value="{{value}}">{{text}}</option>
+      {{/each}}
+    </select>
+  </div>
+</template>
+
+<template name="atRadioInput">
+  <div class="at-input form-group">
+    <label>{{displayName}}</label>
+    {{#each values}}
+      <div class="at-input radio">
+        <label for="at-field-{{id}}-choice-{{value}}">
+          <input id="at-field-{{id}}-choice-{{value}}" type="radio" name="at-field-{{id}}" value={{value}}>
+          {{text}}
+        </label>
+      </div>
+    {{/each}}
+  </div>
+</template>
+
+<template name="atHiddenInput">
+  <input type="hidden" id="at-field-{{_id}}" name="at-field-{{_id}}">
+</template>

@@ -1,0 +1,29 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="failedTestRuns">
+
+    <div class="well">
+        <h5 class="well__heading"><i class="fa fa-rocket settings-icon" aria-hidden="true" style="margin-right: 5px;"></i> Test runs that may require your attention {{#if hasFailedTestRuns}}<spam class="mixin-link clear-all-failed-test-runs pull-right">Clear all</spam>{{/if}}
+        </h5>
+
+        <div>
+            {{> reactiveTable class="table pointer filter-table recent-test-runs__table"  fields=fields filters=filters settings=settings collection=failedTestRuns}}
+        </div>
+    </div>
+
+</template>
+

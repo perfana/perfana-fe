@@ -1,0 +1,141 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="grafana">
+<div class="container-fluid">
+    <div class="well col-md-11">
+        <div role="tabpanel" class="tab-pane" id="configuration">
+            <ul class="nav nav-tabs grafana-configuration" role="tablist">
+                {{#each grafanas}}
+                    <li role="presentation" class="{{#if indexIsZero @index}}active{{/if}}"><a href="#{{@index}}" role="tab" data-toggle="tab">{{label}}</a></li>
+                {{/each}}
+            </ul>
+            <div class="tab-content">
+                {{#each grafanas}}
+                    <div role="tabpanel" class="tab-pane {{#if indexIsZero @index}}active{{/if}}" id="{{@index}}">
+                        {{#if tabActive @index }}
+<!--                        <div>-->
+<!--                            {{#if currentUser}}-->
+<!--                                {{#if adminUser}}-->
+<!--                                <div class="btn-group__grafana-instance">-->
+<!--                                    {{#afModalShow formId="editGrafanas" collection="Grafanas" type="update" doc=this._id backdrop="static" title="Update Grafana instance" }}-->
+<!--                                        <span class="perfana-testrun-meta-data btn btn-linke"><i id="update-grafana" class="fa fa-pencil" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit Grafana instance"></i> Edit Grafana instance</span>-->
+<!--                                    {{/afModalShow}}-->
+<!--                                    {{#afModalShow formId="addGrafanas" collection="Grafanas" type="insert" backdrop="static"  class="btn btn-primary perfana-label add-dashboard pull-right perfana-btn" title="Add Grafana instance"}}-->
+<!--                                        Add Grafana instance-->
+<!--                                    {{/afModalShow}}-->
+<!--                                </div>-->
+<!--                                {{/if}}-->
+<!--                            {{/if}}-->
+<!--                        </div>-->
+                        <div>
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <th class="col-md-3">Label</th>
+                                    <td>{{label}}</td>
+
+                                </tr>
+                                <tr>
+                                    <th class="col-md-3">Client url</th>
+                                    <td><a href="{{clientUrl}}" target="_blank">{{clientUrl}}</a></td>
+
+                                </tr>
+                                {{#if serverUrlConfigured this}}
+                                    <tr>
+                                        <th class="col-md-3">Server url</th>
+                                        <td>{{serverUrl}}</td>
+                                    </tr>
+                                {{/if}}
+                                <tr>
+                                    <th class="col-md-3">Organization ID</th>
+                                    <td>{{orgId}}</td>
+
+                                </tr>
+                                <tr>
+                                    <th class="col-md-3">Use instance to store all snapshots</th>
+                                    <td>{{instanceHelper snapshotInstance}}</td>
+                                </tr>
+                                <tr>
+                                    <th class="col-md-3">Use instance to host Perfana dashboards</th>
+                                    <td>{{instanceHelper trendsInstance}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            {{> linkedDashboards grafanaLabel=this.label}}
+                        </div>
+                        {{/if }}
+                     </div>
+
+                {{/each}}
+
+               </div>
+            </div>
+         </div>
+    </div>
+</template>
+
+<template name="usedBySUTFilter">
+    {{> reactiveTableFilter id="usedBySUTFilter" }}
+</template>
+
+<template name="dashboardNameFilter">
+    {{> reactiveTableFilter id="dashboardNameFilter"  }}
+</template>
+
+<template name="linkedDashboards">
+    <div class="col-md-4 pull-right dashboard-name-filter">
+        {{> reactiveTableFilter id="dashboardNameFilter" }}
+    </div>
+    <div>
+        <ul class="nav nav-tabs linked-dashboards" role="tablist">
+
+            <li role="presentation" class="active" ><a href="#templates" role="tab" data-toggle="tab">Template dashboards</a></li>
+<!--            {{#if hasDashboardsUsedBySut}}-->
+                <li role="presentation" ><a href="#dashboards-used-by-sut" role="tab" data-toggle="tab">Dashboards used by SUT</a></li>
+<!--            {{/if}}-->
+            <li role="presentation"><a href="#other" role="tab" data-toggle="tab">Other dashboards</a></li>
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="templates">
+            {{#if tabActive '#templates' }}
+                {{> reactiveTable class="table recent-test-runs__table filter-table grafana-dashboards" collection=dashboards fields=fields settings=settings}}
+            {{/if}}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="dashboards-used-by-sut">
+            {{#if tabActive '#dashboards-used-by-sut' }}
+                <div>
+                    {{> usedBySUTSearchBox}}
+                </div>
+                <div>
+                    {{> reactiveTable class="table recent-test-runs__table filter-table grafana-dashboards" collection=dashboards fields=fields settings=settings}}
+                </div>
+            {{/if}}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="other">
+            {{#if tabActive '#other' }}
+                {{> reactiveTable class="table recent-test-runs__table filter-table grafana-dashboards" collection=dashboards fields=fields settings=settings}}
+            {{/if}}
+        </div>
+    </div>
+</template>
+
+<template name="noLinkedDashboards">
+  <p>No Grafana dashboards found</p>
+</template>

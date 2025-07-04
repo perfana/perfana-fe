@@ -1,0 +1,98 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="header">
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand perfana-logo-center" href="{{pathFor 'landingPage'}}"><span><img class="perfana-logo" src="{{perfanaUrl}}/logo.ico"><strong> Perfana</strong></span></a>
+                </div>
+                <div class="row collapse navbar-collapse pull-right" id="navbarCollapse">
+                    <ul class="nav navbar-nav">
+                        <i class="fa fa-plug pull-right" style="color:{{ connectionStatusColor }};margin-top: 95%;margin-right: 50%;" data-toggle="tooltip" data-placement="bottom" title="{{ connectionStatus }}"></i>
+                    </ul>
+                    <ul class="nav navbar-nav">
+<!--                        {{#if currentUser}}-->
+<!--                            <div class="navbar-collapse collapse navbar-responsive-collapse" id="user-profile-dropdown">-->
+<!--                                <ul class="nav navbar-nav navbar-right">-->
+<!--                                    <li class="dropdown">-->
+<!--                                        <a class="dropdown-toggle" data-toggle="dropdown">-->
+<!--                                            Notifications {{#if notificationsPresent}}<span class="badge badge-danger">{{notficationCount}}</span>{{/if}} <span class="caret"></span>-->
+<!--                                        </a>-->
+<!--                                        <ul class="dropdown-menu">-->
+<!--                                            <div>-->
+<!--                                                {{> notifications}}-->
+<!--                                            </div>-->
+<!--                                        </ul>-->
+<!--                                    </li>-->
+<!--                                </ul>-->
+<!--                            </div>-->
+<!--                        {{/if}}-->
+
+                       </ul>
+                       <ul class="nav navbar-nav">
+<!--                        {{#if userLoggedIn}}-->
+                            <div class="navbar-collapse collapse navbar-responsive-collapse" id="user-profile-dropdown">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li class="dropdown">
+                                        <a class="dropdown-toggle" data-toggle="dropdown">
+                                            {{ currentUser.profile.name }} <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu perfana">
+                                            <li><a id="documentation" href=""><i class="fa fa-book"></i>&nbsp;&nbsp;Documentation</a></li>
+                                            <li><a id="theme" href=""><i class="fa {{ currentThemeIcon }}"></i>   {{theOtherTheme}} theme</a></li>
+                                            <li><a id="about" href=""><i class="fa fa-info-circle"></i>&nbsp;&nbsp;About</a></li>
+                                            <li><a id="support" href=""><i class="fa fa-question-circle"></i>&nbsp;&nbsp;Support</a></li>
+                                            <li role="separator" class="divider"></li>
+                                            <li><a class="logout"  href="#"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Logout</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+<!--                        {{else}}-->
+<!--                            <li><a href="/admin/login?ref={{ref}}" class="login"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;Login</a></li>-->
+<!--                        {{/if}}-->
+
+                       </ul>
+
+                </div>
+        </nav>
+</template>
+
+<template name="aboutModal">
+    <div class="modal fade">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-body ">
+                    <h5 class="well__heading">Versions</h5>
+                    <div>
+                        {{> reactiveTable class="filter-table pointer table" collection=versions fields=fields settings=settings}}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="noVersions">
+    <div><p>No component versions found, check database connection</p></div>
+</template>

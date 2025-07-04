@@ -1,0 +1,328 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+    <template name="compareResultDetails">
+    <div class="well" >
+        <h5 class="well__heading">{{selectedCompareResultLabel}}{{#if inReport}}{{#if userHasPermissionForApplication}}<i id="delete-comparison-result-from-report" class="fa fa-trash pull-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete comparison result"></i>{{/if}}{{/if}}</h5>
+        <div>
+            {{#each compareResultDashboards}}
+               {{> testRunComparisonDashboard}}
+            {{/each}}
+        </div>
+    </div>
+</template>
+
+
+<template name="testRunComparisonDashboard">
+    <div class="panel-group comparison-details-dashboards" id="compare-metric-accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <div class="drilldown-accordion-toggle row perfana-panel-title" data-toggle="collapse" data-parent="#compare-metric-accordion" href="#dashboard-accordion-{{slugify dashboardLabel}}-{{dashboardUid}}-{{sanatize baselineTestRunId}}">
+                        <div class="row col-md-10">
+                            {{#if dashboardHeaderCollapsed}}
+                                <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                    <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                                </div>
+                            {{ else }}
+                                <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                    <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                                </div>
+                            {{/if}}
+                            <div class="drilldown-accordion-toggle col-md-4 perfana-testrun-meta-data" >{{dashboardLabel}}</div>
+<!--                            <div class="drilldown-accordion-toggle list-group-item col-md-1 perfana-testrun-meta-data" >Baseline</div>-->
+<!--                            <div class="list-group-item col-md-4 perfana-testrun-meta-data text-center">{{baselineTestRun}}</div>-->
+                        </div>
+                    </div>
+                </h4>
+            </div>
+            <div id="dashboard-accordion-{{slugify dashboardLabel}}-{{dashboardUid}}-{{sanatize baselineTestRunId}}" class="panel-collapse collapse dashboard-collapse">
+                <div class="panel-body">
+                    {{#each panels}}
+<!--                        <span class="compare-result-header">{{humanReadablePanelTitle panelTitle}}</span>-->
+                        {{> testRunComparisonPanelContent panel=this targets=this.targets dashboardLabel=dashboardLabel snapshotUrl=snapshotUrl baselineSnapshotPanelUrl=baselineSnapshotPanelUrl snapshotPanelUrl=snapshotPanelUrl dashboardUid=dashboardUid grafana=grafana comparisonType='compared-to-baseline-test-run' testRunId=testRunId baselineTestRunId=baselineTestRunId benchmark=benchmark includePanelTitle=true}}
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="testRunComparisonPanelContent">
+
+    <div>
+        <div class="panel-group comparison-details-panels" id="panel-accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="perfana-panel panel-title">
+                        <!--<div class="row">-->
+                        <!--<div class="list-group-item col-md-4 perfana-label perfana-testrun-meta-data">Panel title</div>-->
+                        <!--<div class="list-group-item col-md-4 perfana-label perfana-testrun-meta-data">Benchmark</div>-->
+                        <!--<div class="list-group-item col-md-1 perfana-label perfana-testrun-meta-data">Result</div>-->
+                        <!--</div>-->
+                        <div class="row drilldown-accordion-toggle"  data-toggle="collapse"  href="#panel-accordion-{{sanatize baselineTestRunId}}-{{slugify dashboardLabel}}-{{this.comparisonType}}-{{panel.panelId}}-{{panel.config.evaluateType}}">
+                            <div class="row">
+                                {{#if compareMetricHeaderCollapsed}}
+                                    <div class=" col-md-1 perfana-testrun-meta-data text-center">
+                                        <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                                    </div>
+                                {{ else }}
+                                    <div class=" col-md-1 perfana-testrun-meta-data text-center">
+                                        <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                                    </div>
+                                {{/if}}
+<!--                                <div class="col-md-9 perfana-testrun-meta-data {{#if statusError}}compare-panel-error{{/if}}"><strong>{{humanReadablePanelTitle panelTitle}}</strong> {{#if hasBenchmark}}| allow {{humanReadableBenchmarkOperator panel.benchmark.operator}} deviation of <strong>{{panel.benchmark.value}}{{#if relativeDeviation}}%{{/if}}</strong> of {{humanReadableEvaluateType panel.evaluateType }} {{#if matchPattern}} for series matching pattern "<strong>{{panel.matchPattern}}</strong>"{{/if}}{{#if hasBenchmarkAbsoluteFailureThreshold}}, fail only if absolute deviation exceeds <strong>{{panel.benchmark.absoluteFailureThreshold}}</strong>{{/if}} {{else}} | {{humanReadableEvaluateType panel.evaluateType }}{{/if}}</div>-->
+                                <div class="col-md-9 perfana-testrun-meta-data {{#if statusError}}compare-panel-error{{/if}}">{{ createBenchmarkSpan panel includePanelTitle }}</div>
+
+                                <div class="row col-md-1">
+                                    {{#if hasBenchmark}}
+                                            <div class="perfana-testrun-meta-data text-center">{{benchmarkResult 'compared-to-selected-baseline' this}}</div>
+                                        <!--                                {{#if userHasPermission}}-->
+                                        <!--                                    {{#afModalShow formId="editBenchmarks" collection="Benchmarks" type="update" backdrop="static" doc=benchmark._id title="Update KPI"}}-->
+                                        <!--                                        <div class="  perfana-testrun-meta-data col-md-6  text-center"><i id="update-benchmark" class="fa fa-pencil reactive-table-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Update benchmark"></i></div>-->
+                                            <!--                                    {{/afModalShow}}-->
+                                        <!--                                {{/if}}-->
+                                    {{/if}}
+                                </div>
+                                <!-- <div id="benchmark-modal" panel-id="{{panel.panelId}}" dashboard-label="{{dashboardLabel}}" dashboard-uid="{{dashboardUid}}" grafana="{{grafana}}" snapshot-url="{{snapshotUrl}}" baseline-snapshot-panel-url="{{baselineSnapshotPanelUrl}}" snapshot-panel-url="{{snapshotPanelUrl}}" baseline-testrun-id="{{ baselineTestRunId }}"  class="fa fa-columns  compare-results  view-benchmark-modal col-md-1" data-toggle="tooltip" data-placement="top" title="Compare graphs"></div> -->
+
+                            </div>
+
+                        </div>
+                    </h4>
+                </div>
+                <div id="panel-accordion-{{sanatize baselineTestRunId}}-{{slugify dashboardLabel}}-{{this.comparisonType}}-{{panel.panelId}}-{{panel.config.evaluateType}}" class="panel-collapse collapse metric-collapse">
+                    <div class="panel-body">
+                    {{#if statusError}}
+                        <div>
+                            <p class="compare-panel-error compare-panel-message"> {{this.panel.message}}</p>
+                        </div>
+                    {{ else }}
+                        {{#if showFilter}}
+                            {{> reactiveTableFilter id=metricNameFilter  }}
+                        {{/if}}
+                        {{#if panelAverageAll }}
+                            {{> reactiveTable class="filter-table table" collection=panelAverageArray fields=panelAveragefields settings=settings benchmark=this.benchmark rowClass=rowClass selectedMetricName=selectedMetricName}}
+                        {{else}}
+                             {{> reactiveTable class="filter-table table" collection=panelTargets fields=fields settings=settings averageAll=panelAverageAll  benchmark=this.benchmark rowClass=rowClass selectedMetricName=selectedMetricName}}
+                        {{/if}}
+                    {{/if}}
+                    {{#unless compareMetricHeaderCollapsed}}
+                        {{#if notTable }}
+                            {{> visualizeDifference comparisonType='compared-to-selected-baseline' dashboardLabel=dashboardLabel applicationDashboardId=applicationDashboardId panelId=panel.panelId metricName=selectedMetricName showTitle=true panelYAxesFormat=panel.panelYAxesFormat validateWithDefaultIfNoDataValue=panel.validateWithDefaultIfNoDataValue validateWithDefaultIfNoData=panel.validateWithDefaultIfNoData targets=panel.targets baselineTestRunId=baselineTestRunId}}
+<!--                            {{> benchmarkGraphs metricHeaderCollapsed=compareMetricHeaderCollapsed panelId=panel.panelId dashboardLabel=dashboardLabel dashboardUid=dashboardUid grafana=grafana snapshotUrl=snapshotUrl baselineSnapshotPanelUrl=baselineSnapshotPanelUrl snapshotPanelUrl=snapshotPanelUrl baselineTestRunId=baselineTestRunId }}-->
+                        {{/if}}
+                    {{/unless}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</template>
+
+
+<template name="testRunComparisonTargetContent">
+
+    <div class="row perfana-target">
+        <div class="list-group-item col-md-4">{{target}}</div>
+        <div class="list-group-item col-md-2 perfana-testrun-meta-data">{{benchmarkBaselineTestRunValue}}</div>
+        <div class="list-group-item col-md-2 perfana-testrun-meta-data">{{value}}</div>
+        <div class="list-group-item col-md-1 perfana-testrun-meta-data text-center">{{comparisonResult this}}</div>
+    </div>
+</template>
+
+
+<template name="noComparisonData">
+    <p>No data available for comparison</p>
+</template>
+
+
+
+<template name="comparisonPanelContent">
+
+    <div>
+        <div class="panel-group key-metrics-details" id="panel-accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="perfana-panel panel-title">
+                        <!--<div class="row">-->
+                        <!--<div class="list-group-item col-md-4 perfana-label perfana-testrun-meta-data">Panel title</div>-->
+                        <!--<div class="list-group-item col-md-4 perfana-label perfana-testrun-meta-data">Benchmark</div>-->
+                        <!--<div class="list-group-item col-md-1 perfana-label perfana-testrun-meta-data">Result</div>-->
+                        <!--</div>-->
+                        <div class="row drilldown-accordion-toggle collapse in"  data-toggle="collapse"  href="#panel-accordion-{{slugify panel.dashboardLabel}}-{{this.comparisonType}}-{{panel.panelId}}-{{panel.evaluateType}}">
+                            <div class="row col-md-11">
+                                <div class="row">
+                                    {{#if compareMetricHeaderCollapsed}}
+                                        <div class=" col-md-1 perfana-testrun-meta-data text-center">
+                                            <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                                        </div>
+                                    {{ else }}
+                                        <div class=" col-md-1 perfana-testrun-meta-data text-center">
+                                            <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                                        </div>
+                                    {{/if}}
+                                    <!--                                    <div class=" col-md-11 perfana-testrun-meta-data {{#if statusError}}compare-panel-error{{/if}}">allow {{humanReadableBenchmarkOperator panel.config.benchmark.operator}} deviation of <strong>{{panel.config.benchmark.value}}{{#if relativeDeviation}}%{{/if}}</strong> of {{humanReadableEvaluateType panel.config.evaluateType }} {{#if matchPattern}} for series matching pattern "<strong>{{panel.config.matchPattern}}</strong>"{{/if}}{{#if hasBenchmarkAbsoluteFailureThreshold}}, fail only if absolute deviation exceeds <strong>{{panel.config.benchmark.absoluteFailureThreshold}}</strong>{{/if}}</div>-->
+                                    <div class="col-md-9 check-results-details-header perfana-testrun-meta-data {{#if statusError}}compare-panel-error{{/if}}">{{ createBenchmarkSpan panel includePanelTitle }}</div>
+                                </div>
+                            </div>
+                            <div class="row col-md-1">
+                                <div class=" col-md-6  perfana-testrun-meta-data text-center">{{benchmarkResult this.comparisonType this}}</div>
+                                    <!--                                {{#if userHasPermission}}-->
+                                    <!--                                    {{#afModalShow formId="editBenchmarks" collection="Benchmarks" type="update" backdrop="static" doc=benchmark._id title="Update KPI"}}-->
+                                    <!--                                        <div class="  perfana-testrun-meta-data col-md-6  text-center"><i id="update-benchmark" class="fa fa-pencil reactive-table-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Update benchmark"></i></div>-->
+                                        <!--                                    {{/afModalShow}}-->
+                                    <!--                                {{/if}}-->
+                            </div>
+                        </div>
+                    </h4>
+                </div>
+                <div id="panel-accordion-{{slugify panel.dashboardLabel}}-{{this.comparisonType}}-{{panel.panelId}}-{{panel.evaluateType}}" class="panel-collapse colllapse in metric-collapse">
+                    <div class="panel-body">
+                        {{#if statusError}}
+                            <div>
+                                <p class="compare-panel-error compare-panel-message"> {{this.message}}</p>
+                            </div>
+                        {{else}}
+                            {{#if showFilter}}
+                                {{> reactiveTableFilter id=metricNameFilter  }}
+                            {{/if}}
+                            {{#if panelAverageAll }}
+                                {{> reactiveTable class="filter-table table" collection=panelAverageArray fields=panelAveragefields settings=settings benchmark=panel.benchmark rowClass=rowClass selectedMetricName=selectedMetricName}}
+                            {{else}}
+                                {{> reactiveTable class="filter-table table" collection=panelTargets fields=fields settings=settings averageAll=panelAverageAll benchmark=panel.benchmark panel=panel rowClass=rowClass selectedMetricName=selectedMetricName}}
+                            {{/if}}
+                        {{/if}}
+                        {{> visualizeDifference comparisonType=comparisonType dashboardLabel=panel.dashboardLabel applicationDashboardId=panel.applicationDashboardId panelId=panel.panelId metricName=selectedMetricName showTitle=true panelYAxesFormat=panel.panelYAxesFormat validateWithDefaultIfNoDataValue=panel.validateWithDefaultIfNoDataValue validateWithDefaultIfNoData=panel.validateWithDefaultIfNoData targets=panel.targets}}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</template>
+
+<template name="benchmarkGraphModal">
+    <div class="modal fade">
+        <div class="modal-dialog benchmark-modal" >
+            <div class="modal-content">
+
+                <!--<div class="modal-header">-->
+                <!--<h4 class="modal-title">Benchmark</h4>-->
+                <!--</div>-->
+
+                <div class="modal-body ">
+                    <div class="col-md-6 benchmark-header">
+                        <h6> <span class="label label-default">Baseline</span>  {{baselineTestRunId}}</h6>
+                        {{#if hasBaselineSnapshotPanelUrl}}
+                            {{#if testRunExpired}}
+                                <div style="width: 100%;  height: 750px;">
+                                    <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                                </div>
+                            {{ else}}
+                                <iframe class="grafana-iframe-benchmarks" src="{{baselineSnapshotPanelUrl}}"  frameBorder="0"  width="100%" height="750"></iframe>
+                            {{/if}}
+                        {{ else }}
+                            <div style="width: 100%;  height: 750px;">
+                                <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                            </div>
+                        {{/if}}
+                    </div>
+                    <div class="col-md-6 benchmark-header">
+                        <h6>{{testRunId}}</h6>
+                        {{#if hasSnapshotPanelUrl}}
+                            {{#if testRunExpired}}
+                                <div style="width: 100%;  height: 750px;">
+                                    <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                                </div>
+                            {{ else }}
+                                <iframe class="grafana-iframe-benchmarks" src="{{snapshotPanelUrl}}"  frameBorder="0"  width="100%" height="750"></iframe>
+                            {{/if}}
+                        {{ else }}
+                            <div style="width: 100%;  height: 750px;">
+                                <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                            </div>
+                        {{/if}}
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="benchmarkGraphs">
+    {{#unless metricHeaderCollapsed}}
+        <div class="col-md-6 benchmark-header">
+            <h6><span class="label label-default" style="margin-right: 5px;">Baseline</span> {{baselineTestRunId}}</h6>
+            {{#if hasBaselineSnapshotPanelUrl}}
+                {{#if testRunExpired}}
+                    <div style="width: 100%;  height: 750px;">
+                        <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                    </div>
+                {{ else }}
+                    <iframe class="grafana-iframe-benchmarks" src="{{themeUrl baselineSnapshotPanelUrl}}"  frameBorder="0"  width="100%" height="750"></iframe>
+                {{/if}}
+            {{ else }}
+                <div style="width: 100%;  height: 750px;">
+                    <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                </div>
+            {{/if}}
+        </div>
+        <div class="col-md-6 benchmark-header">
+            <h6>{{testRunId}}</h6>
+            {{#if hasSnapshotPanelUrl}}
+                {{#if testRunExpired}}
+                    <div style="width: 100%;  height: 750px;">
+                        <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                    </div>
+                {{ else }}
+                    <iframe class="grafana-iframe-benchmarks" src="{{themeUrl snapshotPanelUrl}}"  frameBorder="0"  width="100%" height="750"></iframe>
+                {{/if}}
+            {{ else }}
+                <div style="width: 100%;  height: 750px;">
+                    <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                </div>
+            {{/if}}
+        </div>
+    {{/unless}}
+</template>
+
+<template name="visualizeCompareModal">
+    <div class="modal fade">
+        <div class="modal-dialog visualize-modal" >
+            <div class="modal-content">
+                <div class="modal-body ">
+                    {{> visualizeDifference comparisonType=comparisonType dashboardLabel=dashboardLabel applicationDashboardId=applicationDashboardId panelId=panelId metricName=metricName showTitle=true}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,161 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunRequirementsDetails">
+
+   <div class="row">
+
+<!--       <div class="col-md-2">-->
+<!--           {{> sidebar}}-->
+<!--       </div>-->
+       <div class="col-md-10">
+           <p>
+               {{> perfanaBreadcrumb}}
+           </p>
+           <div class="row">
+               {{#each testRun.benchmarks.dashboards}}
+                  {{#if hasMeetsRequirement}}
+                    {{> requirementDashboard }}
+                  {{/if}}
+               {{/each}}
+           </div>
+       </div>
+   </div>
+</template>
+
+<template name="requirementDashboard">
+    <div class="col-md-10 panel-group" id="dashboard-accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading" id="dashboard-header">
+                <h4 class="panel-title">
+                    <div class="drilldown-accordion-toggle row  perfana-panel-title" data-toggle="collapse" data-parent="#dashboard-accordion" href="#dashboard-accordion-{{slugify dashboardLabel}}-{{dashboardUid}}">
+                        <div class="row col-md-9">
+                            {{#if dashboardHeaderCollapsed}}
+                            <div class="list-group-item col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-chevron-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                            {{ else }}
+                            <div class="list-group-item col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-chevron-up" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                            {{/if}}
+                            <div class="drilldown-accordion-toggle list-group-item col-md-4 perfana-testrun-meta-data" >{{dashboardLabel}}</div>
+                            <div class="list-group-item col-md-1 perfana-testrun-meta-data text-center">{{requirementResult  this}}</div>
+                        </div>
+                    </div>
+                </h4>
+            </div>
+            <div id="dashboard-accordion-{{slugify dashboardLabel}}-{{dashboardId}}" class="panel-collapse collapse dashboard-collapse">
+                <div class="panel-body">
+                    {{#if hasSnapshotUrl}}
+                      {{#each panels}}
+                        {{#if hasMeetsRequirement}}
+                          {{> requirementPanelContent panel=this dashboardLabel=../dashboardLabel snapshotUrl=../snapshotUrl dashboardUId=../dashboardUId grafana=../grafana metricHeaderCollapsed=false}}
+                        {{/if}}
+                      {{/each}}
+                    {{else}}
+                      <p><i class="fa fa-exclamation-triangle no-snapshot" style="padding:15px; color:orange;" aria-hidden="true"></i>No snapshot available to evaluate</p>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="requirementPanelContent">
+
+    <div>
+        <div class="panel-group key-metrics-details" id="panel-accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading" id="metric-header">
+                    <h4 class="perfana-panel panel-title">
+                        <div class="row drilldown-accordion-toggle perfana-panel collapse in"  data-toggle="collapse" data-parent="#panel-accordion" href="#panel-accordion-{{slugify panel.dashboardLabel}}-{{panel.panelId}}-{{panel.evaluateType}}">
+                            <div class="row col-md-11">
+                                <div class="row">
+                                    {{#if metricHeaderCollapsed}}
+                                        <div class="col-md-1 benchmark-angle perfana-testrun-meta-data text-center">
+                                            <i class="fa  fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                                        </div>
+                                    {{ else }}
+                                        <div class="col-md-1 benchmark-angle perfana-testrun-meta-data text-center">
+                                            <i class="fa  fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                                        </div>
+                                    {{/if}}
+<!--                                <div class="col-md-4 perfana-testrun-meta-data">{{humanReadablePanelTitle panel.panelTitle}}</div>-->
+<!--                                    <div class="col-md-11 check-results-details-header perfana-testrun-meta-data {{#if statusError}}compare-panel-error{{/if}}"><strong>{{humanReadablePanelTitle panel.panelTitle}}</strong> | {{humanReadableEvaluateType panel.evaluateType }} should be {{humanReadableOperator panel.requirement.operator}} <strong>{{parseValue panel}}{{humanReadableYAxesFormat panel}}</strong> {{#if matchPattern}} for series matching pattern "<strong>{{panel.matchPattern}}</strong>"{{/if}}</div>-->
+                                    <div class="col-md-11 check-results-details-header perfana-testrun-meta-data {{#if statusError}}compare-panel-error{{/if}}">{{humanReadableEvaluateType panel.evaluateType }} should be {{humanReadableOperator panel.requirement.operator}} <strong>{{parseValue panel}}{{humanReadableYAxesFormat panel}}</strong> {{#if matchPattern}} for series matching pattern "<strong>{{panel.matchPattern}}</strong>"{{/if}}</div>
+                                </div>
+                            </div>
+                            <div class="row col-md-1">
+                                <div class="col-md-6 perfana-testrun-meta-data text-center">{{requirementResult this.panel}}</div>
+
+<!--                                {{#if userHasPermission}}-->
+<!--                                    {{#afModalShow formId="editBenchmarks" collection="Benchmarks" type="update" backdrop="static" doc=benchmark._id title="Update KPI" }}-->
+<!--                                        <div class=" perfana-testrun-meta-data col-md-6  text-center"><i id="update-benchmark" class="fa fa-pencil reactive-table-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Update benchmark"></i></div>-->
+<!--                                    {{/afModalShow}}-->
+<!--                                {{/if}}-->
+
+
+                            </div>
+                        </div>
+                    </h4>
+                </div>
+                <div id="panel-accordion-{{slugify panel.dashboardLabel}}-{{panel.panelId}}-{{panel.evaluateType}}" class="panel-collapse collapse in metric-collapse">
+                    {{#if statusError}}
+                        <div>
+                            <p class="compare-panel-error compare-panel-message"> {{this.panel.requirementsCheck.message}}</p>
+                        </div>
+                    {{else}}
+                        <div class="panel-body">
+                            {{#if showFilter}}
+                               {{> reactiveTableFilter id=metricNameFilter  }}
+                            {{/if}}
+                            {{> reactiveTable class="filter-table table" collection=panelTargets fields=fields settings=settings rowClass=rowClass selectedMetricName=selectedMetricName restoreFilter=restoreFilter}}
+                            {{> visualizePanelMetrics dashboardLabel=panel.dashboardLabel applicationDashboardId=panel.applicationDashboardId panelId=panel.panelId metricName=selectedMetricName showTitle=true requirementValue=requirementValue panelYAxesFormat=panel.panelYAxesFormat validateWithDefaultIfNoDataValue=panel.validateWithDefaultIfNoDataValue validateWithDefaultIfNoData=panel.validateWithDefaultIfNoData targets=panel.targets}}
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</template>
+
+
+
+
+<template name="requirementGraphModal">
+    <div class="requirement-modal modal fade">
+        <div class="modal-dialog requirement-modal" >
+            <div class="modal-content">
+
+                <!--<div class="modal-header">-->
+                    <!--<h4 class="modal-title">Graph</h4>-->
+                <!--</div>-->
+
+                <div class="modal-body">
+                    <iframe class="grafana-iframe" src="{{url}}"  frameBorder="0"  width="750" height="750"></iframe>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

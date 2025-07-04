@@ -1,0 +1,124 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunConfig">
+    <div class="perfana-content">
+          <div class="row test-run-config-filter-row">
+              <div class="col-md-8">
+                  <div class="input-group test-run-config-filter col-md-3">
+                      <input type="text" class="form-control" id="test-run-config-filter" placeholder="Filter keys" value="{{testRunConfigFilter}}">
+                      <span class="input-group-addon clear-filter"><i class="fa fa-times reactive-table-icon"></i></span>
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="col-md-8 pull-right ">
+                      {{> testRunConfigTagsSearchBox selectedTestRunConfigTags=selectedTestRunConfigTags }}
+                  </div>
+                {{#unless testRunConfigTabActive 'test-run-config' }}
+                    <div class="form-check pull-right col-md-4">
+                        <input class="form-check-input" type="checkbox" checked="{{showDiffsOnly}}" id="showDiffsOnlyCheckbox" >
+                        <label class="form-check-label" for="averageAll">Show diffs only</label>
+                    </div>
+                {{/unless}}
+              </div>
+          </div>
+        <div role="tabpanel" class="tab-pane" id="test-run-config-tags">
+            <ul class="nav nav-tabs test-run-config-tags" role="tablist">
+                <li role="presentation" class="active"><a href="#test-run-config" role="tab" data-toggle="tab">Configuration</a></li>
+                {{# if multipleTestRuns }}
+                    <li role="presentation"><a href="#compared-to-previous-test-run" role="tab" data-toggle="tab">Compared to previous test run <i id="previous-test-run-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="The last completed and valid test run before this test run"></i></a></li>
+                    {{# if hasBaseLineTestRun }}
+                        <li role="presentation" ><a href="#compared-to-baseline-test-run" role="tab" data-toggle="tab">Compared to baseline test run</a></li>
+                    {{/if}}
+                    <li role="presentation" ><a href="#compared-to-selected-test-run" role="tab" data-toggle="tab">Compared to selected test run</a></li>
+                {{/if}}
+            </ul>
+
+        </div>
+
+        <div class="tab-content">
+            {{#if hasTestRunConfig }}
+                {{#if testRunConfigTabActive 'test-run-config' }}
+                    <div role="tabpanel" class="tab-pane active" id="test-run-config">
+                        {{#if containsGitHub testRunConfigTags}}
+                            {{> testRunConfigPanel testRunConfig=testRunConfig tag="GitHub" testRunConfigActiveHref=testRunConfigActiveHref }}
+                        {{/if}}
+                        {{> testRunConfigPanel testRunConfig=testRunConfig tag="Configuration items" testRunConfigActiveHref=testRunConfigActiveHref }}
+
+                    </div>
+                {{/if}}
+                {{#if testRunConfigTabActive 'compared-to-previous-test-run' }}
+                    <div role="tabpanel" class="tab-pane active" id="compared-to-previous-test-run">
+                        {{#if containsGitHub testRunConfigTags}}
+                            {{#if hasGitHubDiffs}}
+                                {{> testRunConfigPanel testRunConfig=testRunConfig tag="GitHub" testRunConfigActiveHref=testRunConfigActiveHref }}
+                            {{/if}}
+                        {{/if}}
+                        {{#if hasDiffs}}
+                            {{> testRunConfigPanel testRunConfig=testRunConfig tag="Configuration items" testRunConfigActiveHref=testRunConfigActiveHref }}
+                        {{/if}}
+                    </div>
+                {{/if}}
+                {{#if testRunConfigTabActive 'compared-to-baseline-test-run' }}
+                    <div role="tabpanel" class="tab-pane active" id="compared-to-baseline-test-run">
+                        {{#if containsGitHub testRunConfigTags}}
+                            {{> testRunConfigPanel testRunConfig=testRunConfig tag="GitHub" testRunConfigActiveHref=testRunConfigActiveHref }}
+                        {{/if}}
+                        {{#if hasDiffs}}
+                            {{> testRunConfigPanel testRunConfig=testRunConfig tag="Configuration items" testRunConfigActiveHref=testRunConfigActiveHref }}
+                        {{/if}}
+                    </div>
+                {{/if}}
+                {{#if testRunConfigTabActive 'compared-to-selected-test-run' }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{> selectTestRunConfigBaseline }}
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane active" id="compared-to-selected-test-run">
+                        {{#if containsGitHub testRunConfigTags}}
+                            {{> testRunConfigPanel testRunConfig=testRunConfig tag="GitHub" testRunConfigActiveHref=testRunConfigActiveHref }}
+                        {{/if}}
+                        {{#if hasDiffs}}
+                            {{> testRunConfigPanel testRunConfig=testRunConfig tag="Configuration items" testRunConfigActiveHref=testRunConfigActiveHref }}
+                        {{/if}}
+                    </div>
+                {{/if}}
+            {{ else }}
+                <h5>No items found</h5>
+            {{/if}}
+
+
+        </div>
+    </div>
+
+</template>
+
+
+<template name="testRunConfigPanel">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <h5 class="perfana-summery-header col-md-9">{{ tag }}</h5>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div>
+                {{> reactiveTable class="filter-table table pointer " collection=testRunConfig fields=fields settings=settings  }}
+            </div>
+        </div>
+    </div>
+</template>

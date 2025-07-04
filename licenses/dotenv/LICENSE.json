@@ -1,0 +1,7 @@
+{
+  "name": "dotenv",
+  "version": "^16.0.3",
+  "license": "BSD-2-Clause",
+  "repository": "git://github.com/motdotla/dotenv.git",
+  "homepage": "https://github.com/motdotla/dotenv#readme"
+}

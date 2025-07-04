@@ -1,0 +1,7 @@
+{
+  "name": "d3-tip",
+  "version": "^0.9.1",
+  "license": "MIT",
+  "repository": "git+https://github.com/Caged/d3-tip.git",
+  "homepage": "https://github.com/Caged/d3-tip"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "d3",
+  "version": "^7.8.5",
+  "license": "ISC",
+  "repository": "git+https://github.com/d3/d3.git",
+  "homepage": "https://d3js.org"
+}

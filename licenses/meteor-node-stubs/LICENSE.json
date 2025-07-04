@@ -1,0 +1,7 @@
+{
+  "name": "meteor-node-stubs",
+  "version": "^1.1.0",
+  "license": "MIT",
+  "repository": "git+https://github.com/meteor/meteor.git#devel",
+  "homepage": "https://github.com/meteor/meteor/blob/devel/npm-packages/meteor-node-stubs/README.md"
+}

@@ -1,0 +1,91 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="grafanaDashboards">
+
+    <div class="perfana-content">
+        {{> perfanaBreadcrumb}}
+        <div class="well">
+            <h5 class="well__heading">Grafana dashboards for <span class="break-word label label-default" style="margin:5px;">{{application}}</span> | Environment <span class=" break-word label label-default" style="margin:5px;">{{testEnvironment}}</span>
+            </h5>
+
+            {{> reactiveTable class="filter-table table" collection=grafanaDashboards fields=fields settings=settings}}
+
+            <div class="text-right">
+                <div type="button" class="btn btn-primary perfana-label back perfana-btn">Back</div>
+
+            {{#if userHasPermissionForApplication}}
+                {{#if hasGrafanaDashboards}}
+                    {{#if dashboardAreAvailableToClone }}
+                        <div type="button" class="btn btn-primary perfana-label clone-dashboards perfana-btn">Clone dashboards</div>
+                    {{/if}}
+                    {{#afModalShow formId="addApplicationDashboards" collection="ApplicationDashboards" type="method" meteormethod="insertApplicationDashboard" backdrop="static"  class="btn btn-primary perfana-label  perfana-btn " title="Add Grafana dashboard"}}
+                        Add dashboard
+                    {{/afModalShow}}
+
+                {{ else }}
+                    <div type="button" class="btn btn-primary perfana-label grafana-configuration perfana-btn pull-right">Update configuration</div>
+                {{/if}}
+            {{/if}}
+            </div>
+
+
+        </div>
+    </div>
+</template>
+
+<template name="cloneFromTestEnvironment">
+    <div class="modal fade" id="cloneFromTestEnvironmentModal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Select test environment</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="list-group row perfana-row">
+                        <div class="list-group-item col-md-11 perfana-label perfana-testrun-meta-data ">
+                            <select class="select-clone-test-environment col-md-12" id="testRunId" name="testRunId">
+                                {{#each applicationTestEnvironments}}
+                                <option  value="{{testEnvironment}}">{{testEnvironment}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="clone-dashboards-from-env">Clone</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<template name="noApplicationDashboards">
+    {{#if userHasPermissionForApplication}}
+        {{#if hasGrafanaDashboards}}
+            <div><p>No Grafana dashboards have been configured yet, click <a class="add-grafana-dashboard">here</a> to add a dashboard</p></div>
+        {{ else }}
+            <p>No linked Grafana dashboards found, please update Grafana configuration</p>
+        {{/if}}
+    {{ else }}
+        <p>You are not allowed to add or edit Grafana dashboards for this application</p>
+    {{/if}}
+</template>

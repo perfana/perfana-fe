@@ -1,0 +1,113 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="sidebar">
+        <!-- Sidebar -->
+        <div class="sidebar__wrapper">
+            <ul class="sidebar-nav">
+
+                    <li id="home" class="sidebar-link">
+                        <i class="fa fa-home settings-icon"></i>
+                        Home
+                    </li>
+                    <li id="test-runs" class="sidebar-link">
+                        <i class="fa fa-rocket settings-icon"></i>
+                        Test runs
+                    </li>
+                     <li id="reports" class="sidebar-link">
+                        <i class="fa fa-file-text-o settings-icon"></i>
+                        Reports
+                    </li>
+                    <li id="documentation" class="sidebar-link">
+                        <i class="fa fa-book settings-icon"></i>
+                        Documentation
+                    </li>
+
+                {{#if testRunView}}
+
+                            <li class="sidebar-link sidebar-link__header">
+                                <!-- <i class="fa fa-wrench settings-icon"></i> -->
+                                Settings
+                            </li>
+                            {{#if systemUnderTestSelected}}
+                                <li id="open-system-under-test" class="sidebar-link"><i class="fa fa-cogs settings-icon"></i> System under test</li>
+                                <li id="open-notification-channels" class="sidebar-link"><i class="fa  fa-paper-plane settings-icon"></i> Notifications channels</li>
+                            {{ else }}
+                                <li class="disabled-sidebar-link" data-toggle="tooltip" data-placement="top" title="Select system under test"><i class="fa fa-cogs settings-icon"></i> System under test</li>
+                                <li class="disabled-sidebar-link" data-toggle="tooltip" data-placement="top" title="Select system under test to configure notification channels"><i class="fa fa-paper-plane settings-icon"></i> Notifications channels</li>
+                            {{/if}}
+                            {{#if testEnvironmentSelected}}
+                                <li id="open-grafana-dashboards" class="sidebar-link"><i class="fa fa-line-chart settings-icon"></i> Grafana dashboards</li>
+                                {{#if dynatraceConfigured}}
+                                <li id="open-dynatrace" class="sidebar-link" title="Dynatrace DQL queries"><i class="fa fa-arrows-h settings-icon"></i> Dynatrace API</li>
+                                {{/if}}
+                            {{ else }}
+                                <li class="disabled-sidebar-link" data-toggle="tooltip" data-placement="top" title="Select environment to configure dashboards"><i class="fa fa-line-chart settings-icon"></i> Grafana dashboards</li>
+                                {{#if dynatraceConfigured}}
+                                <li class="disabled-sidebar-link" data-toggle="tooltip" data-placement="top" title="Select environment to configure Dynatrace DQL queries"><i class="fa fa-line-chart settings-icon"></i> Dynatrace</li>
+                                {{/if}}
+                            {{/if}}
+                            {{#if testTypeSelected}}
+                                {{#if invalidConfiguration}}
+                                    <li id="open-key-metrics" class="sidebar-link" title="Service Level Indicators"><i  style="color: darkorange;" class="fa fa-warning"></i> Service Level Indicators</li>
+                                {{ else }}
+                                    <li id="open-key-metrics" class="sidebar-link" title="Service Level Indicators"><i class="fa fa-check-square-o settings-icon"></i> Service Level Indicators</li>
+                                {{/if}}
+                                <li id="open-reporting-template" class="sidebar-link" title="Report template"><i class="fa fa-file-text-o settings-icon"></i> Report template</li>
+                                <li id="open-abort-alerts" class="sidebar-link" title="Abort alerts"><i class="fa fa-stop-circle-o settings-icon"></i> Abort alert tags</li>
+                                <li id="open-deep-links" class="sidebar-link" title="Links"><i class="fa fa-link settings-icon"></i> Links</li>
+                            {{ else }}
+                                <li class="disabled-sidebar-link" data-toggle="tooltip" data-placement="top" title="Select workload to configure Service Level Indicators"><i class="fa fa-check-square-o settings-icon"></i> Service Level Indicators</li>
+                                <li class="disabled-sidebar-link" data-toggle="tooltip" data-placement="top" title="Select workload to configure report template"><i class="fa fa-file-text-o settings-icon"></i> Report template</li>
+                                <li class="disabled-sidebar-link" data-toggle="tooltip" data-placement="top" title="Select workload to configure abort alerts"><i class="fa fa-stop-circle-o settings-icon"></i> Abort alert tags</li>
+                                <li class="disabled-sidebar-link" data-toggle="tooltip" data-placement="top" title="Select workload to configure links"><i class="fa fa-link settings-icon"></i> Links</li>
+                            {{/if}}
+
+                {{/if}}
+                {{#if isAdmin}}
+                    <li class="sidebar-link sidebar-link__header">
+                        <!-- <i class="fa fa-cogs settings-icon"></i> -->
+                        Admin
+                    </li>
+                    <li id="open-team-settings" class="sidebar-link"><i class="fa fa-users settings-icon"></i>Teams</li>
+                    <li id="open-api-keys" class="sidebar-link"><i class="fa fa-key settings-icon"></i> API keys</li>
+                    <li id="open-user-settings" class="sidebar-link"><i class="fa fa-user settings-icon"></i> Users</li>
+                    <li id="open-autoconfig-settings" class="sidebar-link" title="Automated configuration"><i class="fa fa-magic settings-icon"></i> Profiles</li>
+                    <li id="open-grafana-configuration" class="sidebar-link" title="Grafana configuration"><i class="fa fa-wrench settings-icon"></i> Grafana</li>
+                    <li id="open-admin-notification-channels" class="sidebar-link"><i class="fa  fa-paper-plane settings-icon"></i> Admin Notifications channels</li>
+                    <li id="open-settings" class="sidebar-link"><i class="fa fa-cogs settings-icon"></i> Settings</li>
+
+                {{/if}}
+
+                    <li class="sidebar-link sidebar-link__header">
+                    <!-- <i class="fa fa-cogs settings-icon"></i> -->
+                    Results
+                </li>
+                    <li id="results-per-profile" class="sidebar-link"><i class="fa fa-signal settings-icon"></i> Profile check results</li>
+            </ul>
+        </div>
+
+
+</template>
+
+
+
+
+
+
+
+
+

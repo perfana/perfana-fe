@@ -1,0 +1,7 @@
+{
+  "name": "uuid",
+  "version": "^8.3.2",
+  "license": "MIT",
+  "repository": "git+https://github.com/uuidjs/uuid.git",
+  "homepage": "https://github.com/uuidjs/uuid#readme"
+}

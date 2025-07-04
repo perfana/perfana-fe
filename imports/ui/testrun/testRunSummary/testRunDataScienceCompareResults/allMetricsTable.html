@@ -1,0 +1,92 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="allMetricsTable">
+    <div class="well__heading col-md-12">
+      <div class="adapt-filters col-md-12">
+        <div class="adapt-filters  col-md-6">
+          {{> metricFilter }}
+        </div>
+        <div class="col-md-2">
+          {{> classificationFilter classifications=classifications }}
+        </div>
+        <div class="col-md-2">
+          {{> conclusionFilter conclusions=conclusions }}
+        </div>
+        <div class="col-md-2">
+          {{> ignoredFilter ignored=ignored }}
+        </div>
+      </div>
+    </div>
+  {{#if hasMetrics}}
+    {{> reactiveTable class="table" collection=metrics fields=fields settings=settings rowClass=rowClass selectedMetricName=selectedMetricName }}
+    <div class="metric-details col-md-12">
+      <div role="tabpanel" class="tab-pane" id="configuration">
+        <ul class="nav nav-tabs adapt-details" role="tablist">
+          <li role="presentation" class="active" ><a href="#overview" role="tab" data-toggle="tab">Trend</a></li>
+          <li role="presentation"><a href="#details" role="tab" data-toggle="tab">Test run details</a></li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="overview">
+            {{#if tabActive '#overview' }}
+              <div class="col-md-8">
+                {{> visualizeTrackedDifferences showTitle=true metricName=metric.metricName applicationDashboardId=metric.applicationDashboardId panelId=metric.panelId panelTitle=metric.panelTitle testRunId=testRunId showThresholdsLegend=true dashboardLabel=metric.dashboardLabel clickTestRunToOpenTestRun=false}}
+              </div>
+              <div class="col-md-4">
+                {{> differenceDetails dsCompareStatistics=dsCompareStatistics metric=metric   }}
+              </div>
+            {{/if}}
+          </div>
+          <div role="tabpanel" class="tab-pane" id="details">
+            {{#if tabActive '#details' }}
+              <div class="col-md-8">
+                {{> visualizeDifferenceDs comparisonType=comparisonType showTitle=true panelYAxesFormat=panelYAxesFormat metric=metric testRunId=testRunId }}
+              </div>
+              <div class="col-md-4">
+                {{> differenceDetails dsCompareStatistics=dsCompareStatistics metric=metric   }}
+              </div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+
+<!--      <div class="col-md-8">-->
+<!--        {{> visualizeDifferenceDs comparisonType=comparisonType showTitle=true panelYAxesFormat=panelYAxesFormat metric=metric  testRunId=testRunId }}-->
+<!--      </div>-->
+<!--      <div class="col-md-4">-->
+<!--        {{> differenceDetails dsCompareStatistics=dsCompareStatistics metric=metric   }}-->
+<!--      </div>-->
+    </div>
+  {{/if}}
+</template>
+
+<template name="metricFilter">
+  <label for="metricNameFilter">Metric</label>
+  {{> reactiveTableFilter id="metricNameFilter" fields=metricFilterFields  }}
+</template>
+<template name="panelFilter">
+  <label for="panelFilter">Panel</label>
+  {{> reactiveTableFilter id="panelFilter" fields=panelFilterFields }}
+</template>
+<template name="dashboardFilter">
+  <label for="dashboardFilter">Dashboard</label>
+  {{> reactiveTableFilter id="dashboardFilter" fields=dashboardFilterFields }}
+</template>
+
+<template name="noAdaptMetrics">
+  <p style="margin-top: 10px;">No metrics found</p>
+</template>

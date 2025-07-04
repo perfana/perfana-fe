@@ -1,0 +1,7 @@
+{
+  "name": "jszip",
+  "version": "^3.8.0",
+  "license": "(MIT OR GPL-3.0-or-later)",
+  "repository": "git+https://github.com/Stuk/jszip.git",
+  "homepage": "https://github.com/Stuk/jszip#readme"
+}

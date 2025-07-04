@@ -1,0 +1,55 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="atForm">
+  {{#unless hide}}
+    <div class="at-form">
+      {{#if showTitle}}
+        {{> atTitle}}
+      {{/if}}
+      {{#if showOauthServices}}
+        {{> atOauth}}
+      {{/if}}
+<!--      {{#if showServicesSeparator}}-->
+<!--        {{> atSep}}-->
+<!--      {{/if}}-->
+      {{#if showError}}
+        {{> atError}}
+      {{/if}}
+      {{#if showResult}}
+        {{> atResult}}
+      {{/if}}
+      {{#if showMessage}}
+        {{> atMessage}}
+      {{/if}}
+      {{#if showPwdForm}}
+        {{> atPwdForm}}
+      {{/if}}
+      {{#if showTermsLink}}
+        {{> atTermsLink}}
+      {{/if}}
+      {{#if showSignInLink}}
+        {{> atSigninLink}}
+      {{/if}}
+      {{#if showSignUpLink}}
+        {{> atSignupLink}}
+      {{/if}}
+      {{#if showResendVerificationEmailLink}}
+        {{> atResendVerificationEmailLink}}
+      {{/if}}
+    </div>
+  {{/unless}}
+</template>

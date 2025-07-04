@@ -1,0 +1,49 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunReportPanelRequirements">
+    <div>
+        <h5>Requirement</h5>
+        <div class="panel-group" id="panel-accordion">
+            <div class="panel panel-default report-requirement-panel">
+                <div class="panel-heading  report-requirement-panel">
+                    <h4 class="panel-title">
+                        <div class="row drilldown-accordion-toggle"  data-toggle="collapse" data-parent="#panel-accordion" href="#{{slug}}">
+                            {{#if dashboardHeaderCollapsed}}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-lg fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                            {{ else }}
+                            <div class=" col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-lg fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                            {{/if}}
+                            <div class=" col-md-10 perfana-testrun-meta-data" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Click to view details">{{humanReadableEvaluateType testRunPanel.config.evaluateType }} should be {{humanReadableOperator testRunPanel.config.requirement.operator}} {{testRunPanel.config.requirement.value}}</div>
+                            <div class=" col-md-1 perfana-testrun-meta-data text-center" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Click to view details">{{requirementResult testRunPanel}}</div>
+                        </div>
+                    </h4>
+                </div>
+                <div id="{{slug}}" class="panel-collapse collapse dashboard-collapse">
+                    <div class="panel-body report-requirement-panel">
+                        {{> reactiveTable class="filter-table table" collection=testRunPanel.targets fields=fields settings=settings}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</template>

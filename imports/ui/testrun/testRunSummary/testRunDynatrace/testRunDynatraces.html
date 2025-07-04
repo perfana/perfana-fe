@@ -1,0 +1,114 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunDynatraces">
+
+    <div class="perfana-content">
+
+        <div class="well" >
+            <h4 class="well__heading">Dynatrace entity</h4>
+            <div class="form-group">
+<!--                <label for="request-name-filter">Request name</label>-->
+                {{> selectDynatraceEntity testRun=this.testRun dynatraceEntities=dynatraceEntities }}
+            </div>
+        </div> <div class="well" >
+            <h4 class="well__heading">Problems</h4>
+            <div>
+                {{> reactiveTable class="filter-table table dynatrace-problems" collection=problems fields=problemsFields settings=problemsSettings}}
+            </div>
+        </div>
+        <div class="well">
+            <h4 class="well__heading">Request filter</h4>
+               {{#if hasRequiremnts}}
+                    <div class="form-group">
+                        <label>Only show traces that fail to meet Service Level Objective</label>
+                        {{>testRunTraceRequirementSearchBox requirements=requirements}}
+                    </div>
+                {{/if}}
+            <div class="form-group">
+                <label for="minDuration">Only show requests with duration longer than</label>
+                <input type="text" class="form-control" id="minDuration" placeholder="ms" value="{{minDuration}}">
+            </div>
+            <div class="form-group">
+                <label for="maxDuration">Only show requests with duration shorter than</label>
+                <input type="text" class="form-control" id="maxDuration" placeholder="ms" value="{{maxDuration}}">
+            </div>
+            {{#if hasTestRunDynatraces }}
+                <div class="form-group">
+                    <label for="request-name-filter">Request name</label>
+                    {{> selectRequests requests=testRunDynatraces }}
+                </div>
+            {{/if}}
+
+        </div>
+<!--            <h4 class="well__heading">Filter requests</h4>-->
+<!--            <div>-->
+<!--                <form>-->
+<!--                    {{#if hasRequiremnts}}-->
+<!--                        <div class="form-group">-->
+<!--                            <label>Only show traces that fail to meet Service Level Objective</label>-->
+<!--                            {{>testRunTraceRequirementSearchBox requirements=requirements}}-->
+<!--                        </div>-->
+<!--                    {{/if}}-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="minDuration">Only show requests with duration longer than</label>-->
+<!--                        <input type="text" class="form-control" id="minDuration" placeholder="ms" value="{{minDuration}}">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="maxDuration">Only show requests with duration shorter than</label>-->
+<!--                        <input type="text" class="form-control" id="maxDuration" placeholder="ms" value="{{maxDuration}}">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="request-name-filter">Request name</label>-->
+<!--                        {{> selectRequests requests=testRunDynatraces }}-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+
+            <div class="well">
+                <h4 class="well__heading">Multidimensional analysis</h4>
+                <button id="multi-dimensional-analysis-response-times" class="break-word  dynatrace-button">Response times</button>
+                <button id="multi-dimensional-analysis-failure-rate" class="break-word  dynatrace-button">Failure rate</button>
+                <button id="multi-dimensional-analysis-cpu-time" class="break-word  dynatrace-button">CPU time</button>
+                <button id="multi-dimensional-analysis-io-time" class="break-word  dynatrace-button">IO time</button>
+                <button id="multi-dimensional-analysis-db-time" class="break-word  dynatrace-button">Time spent in database calls</button>
+                <button id="multi-dimensional-analysis-other-services-time" class="break-word  dynatrace-button">Time spent in calls to other services</button>
+
+            </div>
+            <div class="well">
+                <h4 class="well__heading">Deeplinks</h4>
+                <button id="view-response-time-hotspots" class="break-word  dynatrace-button">View response time hotspots</button>
+                <button id="view-pure-paths" class="break-word  dynatrace-button">View PurePaths</button>
+                <button id="analyze-outliers" class="break-word  dynatrace-button">Analyze outliers</button>
+                <button id="method-hotspots" class="break-word  dynatrace-button">Method hotspots</button>
+                <button class="dynatrace-button" id="view-top-web-requests">View top web requests</button>
+                <button class="dynatrace-button" id="view-exception-analysis">View exception analysis</button>
+                <button class="dynatrace-button" id="view-service-flow">View service flow</button>
+            </div>
+            <div class="well">
+                <h4 class="well__heading">Compare</h4>
+                <h5 class="well__heading">Select baseline test run</h5>
+                {{> selectDynatraceBaseline }}
+            </div>
+<!--        </div>-->
+   </div>
+</template>
+
+
+<template name="noTestRunProblems">
+    <div><p>No problems found for this test run</p></div>
+</template>
+

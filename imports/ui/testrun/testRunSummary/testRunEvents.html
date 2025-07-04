@@ -1,0 +1,59 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunEvents">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="perfana-summery-header">Events</h5>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th style="width: 10%">Time</th>
+                            <th style="width: 15%">Title</th>
+                            <th style="width: 32.5%">Description</th>
+                            <th style="width: 40%">Tags</th>
+                            {{#if userHasPermissionForApplication}}
+                                <th style="width: 2.5%"></th>
+                            {{/if}}
+                        </tr>
+                        {{#each testRun.events}}
+                            <tr>
+                                <td style="width: 10%">{{formatTimeHelper timestamp}}</td>
+                                <td style="width: 15%">{{title}}</td>
+                                <td style="width: 32.5%">{{description}}</td>
+                                <td style="width: 40%">
+                                    {{#each tags}}
+                                        <span class=" break-word label label-default">{{this}}</span>
+                                    {{/each}}
+                                </td>
+                                {{#if userHasPermissionForApplication}}
+                                    <td style="width: 2.5%">
+                                        <i id="delete-event" data-event-index="{{@index}}" class="fa fa-trash reactive-table-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete event"></i>
+                                    </td>
+                                {{/if}}
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>
+
+

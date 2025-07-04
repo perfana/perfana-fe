@@ -1,0 +1,119 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="manageTestRun">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="perfana-summery-header">Manage test run</h5>
+            </div>
+            <div class="panel-body">
+                <div class="btn-wrapper">
+
+                    <div class="text-left">
+                        <div type="button" class="btn btn-danger delete-test-run perfana-btn delete-button">Delete test run</div>
+<!--                        {{#if isAdmin}}-->
+<!--                            <div type="button" class="btn btn-default edit-test-run perfana-btn ">Edit test run</div>-->
+<!--                        {{/if}}-->
+                        {{#if isNotBaseline}}
+                            {{#unless testRunExpired}}
+                                <div type="button" class="btn btn-primary perfana-label set-test-run-as-baseline perfana-btn ">Set as baseline</div>
+                            {{/unless}}
+                        {{/if}}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+
+
+
+<template name="manageTestRunReport">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="perfana-summery-header">Manage Report</h5>
+            </div>
+            <div class="panel-body">
+                <div class="text-left">
+                    <div class="btn-wrapper">
+                        <div id="open-report-specification" type="button" class="btn btn-link delete-test-run perfana-btn ">Reporting template</div>
+    <!--                {{#if testRunHasReport}}-->
+                        <div id="remove-report" type="button" class="btn btn-danger  perfana-btn delete-button">Delete report</div>
+    <!--                {{ else }}-->
+    <!--                    {{#if testRunHasReportSpecification}}-->
+    <!--                        <div type="button" id="generate-report" class="btn btn-primary perfana-label perfana-btn">Create report</div>-->
+    <!--                    {{/if}}-->
+    <!--                {{/if}}-->
+                    </div>
+                </div>
+            </div>
+        </div>
+   </div>
+
+
+<!--    {{#if testRunHasReportSpecification}}-->
+
+<!--        <div>-->
+<!--        <div class="panel panel-default">-->
+<!--            <div class="panel-heading">-->
+<!--                <h5 class="perfana-summery-header">Report</h5>-->
+<!--            </div>-->
+<!--            <div class="panel-body">-->
+<!--                {{#if testRunHasReport}}-->
+<!--                <div class="list-group">-->
+<!--                    <div class="list-group-item col-md-1 perfana-testrun-meta-data perfana-label">ID</div>-->
+<!--                    <div class="list-group-item col-md-9 perfana-testrun-meta-data" id="open-report" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="View report">{{testRun.testRunId}}</div>-->
+<!--                    <div class="list-group-item col-md-1 perfana-testrun-meta-data text-center"><i id="remove-report" class="fa fa-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Remove report from db"></i></div>-->
+<!--                </div>-->
+<!--                {{ else }}-->
+<!--                    <p>-->
+<!--                        No report found-->
+<!--                    </p>-->
+<!--                    <p class="report-specification">-->
+<!--                        <a class="open-report-specification">Report template configuration</a>-->
+<!--                    </p>-->
+<!--                    {{#if testRunHasReportSpecification}}-->
+<!--                    <div type="button" id="generate-report" class="btn btn-primary perfana-label perfana-btn">Create report</div>-->
+<!--                    {{/if}}-->
+<!--                {{/if}}-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+</template>
+
+
+<template name="debugTestRun">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="perfana-summery-header">Debug test run</h5>
+            </div>
+            <div class="panel-body">
+                <div class="btn-wrapper">
+
+                    <div class="text-left">
+                        <div type="button" class="btn btn-primary perfana-label download-resources perfana-btn ">Download all related resources</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>

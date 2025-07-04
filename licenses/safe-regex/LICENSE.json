@@ -1,0 +1,7 @@
+{
+  "name": "safe-regex",
+  "version": "^2.1.1",
+  "license": "MIT",
+  "repository": "git://github.com/davisjam/safe-regex.git",
+  "homepage": "https://github.com/davisjam/safe-regex"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "cryptolens",
+  "version": "^1.0.2",
+  "license": "MIT",
+  "repository": "git+https://github.com/Cryptolens/cryptolens-nodejs.git",
+  "homepage": "https://github.com/Cryptolens/cryptolens-nodejs#readme"
+}

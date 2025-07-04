@@ -1,0 +1,177 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunReportPanel">
+            <div class="panel-heading">
+              <h5 class="perfana-summery-header">{{ reportPanelTitle }}
+                <span class="report__panel-tools pull-right">
+                {{#if expandGraph}}
+                  <i class="report__panel-tools-item fa fa-compress toggle-graph-size"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Toggle graph size"></i>
+                {{ else }}
+                  <i class="report__panel-tools-item fa fa-expand toggle-graph-size"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Toggle graph size"></i>
+                {{/if}}
+                {{#if hasSnapShotUrl}}
+                  <span class="report__panel-tools-item snapshot-link switch-report-graphs" snapshot-url="{{snapShotUrl}}"><i snapshot-url="{{snapShotUrl}}" class="fa fa-external-link" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Open Grafana snapshot"></i></span>
+                {{/if}}
+                </span>
+
+              </h5>
+            </div>
+
+   <div class="row">
+       <div class="{{#if expandGraph}}col-md-12{{ else }} col-md-6{{/if}}">
+<!--        {{#if hasSnapShotUrl}}-->
+            {{#if testRunExpired}}
+                <div style="width: 100%;  height: 600px;">
+                    <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                </div>
+             {{ else }}
+                 <iframe class="grafana-iframe" src="{{url}}"  frameBorder="0"  width="100%" height="600"></iframe>
+             {{/if}}
+<!--         {{ else }}-->
+<!--            <div style="width: 100%;  height: 600px;">-->
+<!--                <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>-->
+<!--            </div>-->
+<!--         {{/if}}-->
+       </div>
+       <div class="{{#if expandGraph}}col-md-12 report__panel-annotations{{ else }} col-md-6 report__panel-annotations-collapsed{{/if}}">
+
+<!--           <div class="col-md-11">-->
+               {{#if reportPanelHasAnnotations}}
+               <h5 class="report__panel-annotations-top">Description</h5>
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <span class="{{#if userHasPermissionForApplication}}show-pointer{{/if}}" id="edit-annotations" data-toggle="tooltip" data-placement="top" title="{{#if userHasPermissionForApplication}}Click to edit{{else}}Log in with authorised user to edit{{/if}}">
+                                {{annotation}}
+                                {{#if userHasPermissionForApplication}}
+                            <i class="fa fa-pencil add-annotation pull-right" aria-hidden="true"></i>{{/if}}
+
+                        </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                {{ else }}
+                {{#if userHasPermissionForApplication}}
+                <div id="add-annotations">
+<!--                    <i class="fa fa-plus add-annotation" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Add annotation"></i>-->
+                    <a id="add-annotation" class="add-annotation report__panel-annotations-add-annotations" href="">Add description</a>
+                </div>
+                {{/if}}
+                {{/if}}
+                {{#if testRunPanelHasRequirements}}
+                    <h5>Service Level Objectives</h5>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td>
+                                {{> requirementPanelContent panel=panelCheckResults dashboardLabel=this.reportAnnotations.dashboardLabel snapshotUrl=snapshotUrl dashboardUid=dashboardUid grafana=grafana}}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                {{/if}}
+                {{#if testRunPanelHasComparisonPreviousTestRunResults}}
+                    <h5>Compared to previous test run ({{previousTestRunLink}})</h5>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td>
+                                {{> comparisonPanelContent panel=panelCheckResults dashboardLabel=testRun.reportAnnotations.dashboardLabel snapshotUrl=snapshotUrl dashboardUid=dashboardUid grafana=grafana comparisonType='compared-to-previous-test-run'}}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                {{/if}}
+                {{#if testRunPanelHasComparisonBaselineTestRunResults}}
+                    <h5>Compared to previous test run ({{baselineTestRunLink}})</h5>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td>
+                                {{> comparisonPanelContent panel=panelCheckResults dashboardLabel=testRun.reportAnnotations.dashboardLabel snapshotUrl=snapshotUrl dashboardUid=dashboardUid grafana=grafana comparisonType='compared-to-baseline-test-run'}}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                {{/if}}
+           </div>
+
+<!--       </div>-->
+     </div>
+</template>
+
+<template name="testRunCommentPanel">
+<!--    <div class="panel-heading">-->
+    <div>
+      <h5 class="perfana-summery-header">
+        <span class="report__panel-tools pull-right">
+        {{#if expandGraph}}
+          <i class="report__panel-tools-item fa fa-compress toggle-graph-size"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Toggle graph size"></i>
+        {{ else }}
+          <i class="report__panel-tools-item fa fa-expand toggle-graph-size"  aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Toggle graph size"></i>
+        {{/if}}
+        {{#if hasGraphUrl}}
+             <span class="report__panel-tools-item snapshot-link comments-snapshot-link  switch-report-graphs" snapshot-url="{{graphUrl this}}"><i snapshot-url="{{graphUrl this}}" class="fa fa-external-link" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Open in Grafana"></i></span>
+        {{/if}}
+        </span>
+      </h5>
+    </div>
+
+   <div class="row">
+       <div class="{{#if expandGraph}}col-md-12{{ else }} col-md-6{{/if}}">
+            {{#if hasGraphUrl}}
+                {{#if testRunExpired}}
+                   <div style="width: 100%;  height: 600px;">
+                       <p class="test-run-expired" >Test run has expired, graph no longer available</p>
+                   </div>
+                {{ else}}
+                     <iframe class="grafana-iframe" src="{{graphUrl this}}"  frameBorder="0"  width="100%" height="600"></iframe>
+                {{/if}}
+            {{ else }}
+                <div style="width: 100%;  height: 600px;">
+                    <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                </div>
+            {{/if}}
+       </div>
+       <div class="{{#if expandGraph}}col-md-12 report__panel-annotations{{ else }} col-md-6 report__panel-annotations-collapsed{{/if}}">
+
+           <div class="comment">
+               <h4 class="">
+                   {{ createdByUsername }} <small>added a comment on {{dashboardLabel}}</small><br>
+                   <small>{{formatDateHelper createdAt}}</small>
+               </h4>
+               <div class="comment__body">
+                   {{content}}
+               </div>
+               <div class="comment__reply">
+                   {{#each replies}}
+                       <h4 class="comment__reply-heading">
+                           {{ createdByUsername }} <small>replied</small><br>
+                           <small>{{formatDateHelper createdAt}}</small>
+                       </h4>
+                       <div class="comment__reply-body">
+                           {{content}}
+                       </div>
+                   {{/each}}
+               </div>
+           </div>
+      </div>
+   </div>
+</template>
+

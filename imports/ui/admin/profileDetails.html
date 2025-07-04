@@ -1,0 +1,59 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="profileDetails">
+    <div class="profile__details">
+        <div role="tabpanel" class="tab-pane" id="configuration">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active" ><a href="#dashboards" role="tab" data-toggle="tab">Dashboards</a></li>
+                {{#if hasDashboards}}
+                    {{#if entrepriseKpiInLicense}}
+                        <li role="presentation"><a href="#keyMetrics" role="tab" data-toggle="tab">Service Level Indicators</a></li>
+                    {{/if}}
+                    <li role="presentation"><a href="#reportingTemplate" role="tab" data-toggle="tab">Reporting template</a></li>
+                {{/if}}
+                <li role="presentation" ><a href="#deep-links" role="tab" data-toggle="tab">Links</a></li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="dashboards">
+                    {{> autoconfigDashboards profileName=profile.name}}
+                </div>
+                {{#if hasDashboards}}
+                    {{#if entrepriseKpiInLicense}}
+                        <div role="tabpanel" class="tab-pane" id="keyMetrics">
+                            {{> autoconfigKeyMetrics profileName=profile.name}}
+                        </div>
+                    {{/if}}
+                    <div role="tabpanel" class="tab-pane" id="reportingTemplate">
+                        {{> autoconfigReportPanels profileName=profile.name}}
+                    </div>
+                {{/if}}
+                <div role="tabpanel" class="tab-pane" id="deep-links">
+                    {{> autoconfigDeepLinks profileName=profile.name}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<template name="autoconfigReportingTemplates">
+</template>
+
+
+
+
+

@@ -1,0 +1,127 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunReportRequirements">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5>Key Performance Indicators</h5>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <tbody>
+                       <tr>
+                           <th>Check</th>
+                           <th>Result</th>
+                       </tr>
+                       {{#if testRunHasRequirements }}
+                           <tr>
+                               <td>Service Level Objectives</td>
+                               <td><div id="requirements" class="drill-down-requirements">{{benchmarkResult testRun.benchmarks.meetsRequirement}}</div></td>
+                           </tr>
+                       {{/if}}
+                       {{#if testRunHasPreviousTestRunBenchmark }}
+                           <tr>
+                               <td>Compared to previous, release {{previousRelease}}</td>
+                               <td><div id="compared-to-previous-test-run" class="drill-down-benchmarks">{{benchmarkResult testRun.benchmarks.benchmarkPreviousTestRunOK}}</div></td>
+                           </tr>
+                       {{/if}}
+                       {{#if testRunHasBaselineTestRunBenchmark }}
+                           <tr>
+                               <td>Compared to baseline release {{baselineRelease}}</td>
+                               <td><div id="compared-to-baseline-test-run" class="drill-down-benchmarks">{{benchmarkResult testRun.benchmarks.benchmarkBaselineTestRunOK}}</div></td>
+                           </tr>
+                       {{/if}}
+                    </tbody>
+                </table>
+
+
+<!--                {{#if hasAdditionalRequirements}}-->
+<!--                    <h6 class="requirement-header">Additional requirements</h6>-->
+<!--                    {{#each additionalRequirements}}-->
+<!--                        <div class="list-group row perfana-row">-->
+<!--                            <div class="list-group-item col-md-9 perfana-label perfana-testrun-meta-data ">{{reportRequirement.requirementText}}</div>-->
+<!--                            <div id="toggle-requirement-result" class="list-group-item col-md-2 perfana-testrun-meta-data text-center {{#if userHasPermissionForApplication}}show-pointer{{/if}}" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="{{#if userHasPermissionForApplication}}Click to toggle requirement result{{else}}Log in with authorised user to toggle requirement results{{/if}}">{{benchmarkResult reportRequirement.requirementResult}}</div>-->
+<!--                        </div>-->
+<!--                    {{/each}}-->
+<!--                {{/if}}-->
+                </div>
+            </div>
+        </div>
+<!--    </div>-->
+</template>
+
+<!--
+<template name="testRunReportRequirements">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5>Key Performance Indicators</h5>
+            </div>
+            <div class="panel-body">
+                <h6 class="requirement-header"></h6>
+                {{#if hasBenchmarks}}
+                <table class="table">
+                    <tbody>
+                        {{#if testRunHasRequirements }}
+                        <tr>
+                            <th class="requirement-header">Service Level Objectives</th>
+                            <td>
+                                {{benchmarkResult testRun.benchmarks.meetsRequirement}} Requirements result
+                            </td>
+                        </tr>
+                        {{/if}}
+                    {{#if testRunHasBaselineTestRuns}}
+                        {{#if testRunHasPreviousTestRunBenchmark }}
+                        <tr>
+                            <th class="requirement-header">Compared to other releases</th>
+                            <td>
+                                {{benchmarkResult testRun.benchmarks.benchmarkPreviousTestRunOK}} Compared to previous release {{previousRelease}}
+                            </td>
+                        </tr>
+                        {{/if}}
+                        {{#if testRunHasBaselineTestRunBenchmark }}
+                        <tr>
+                            <th class="requirement-header">Compared to other releases</th>
+                            <td>
+                                {{benchmarkResult testRun.benchmarks.benchmarkBaselineTestRunOK}} Compared to baseline release {{baselineRelease}}
+                            </td>
+                        </tr>                                
+                        {{/if}}
+                        {{/if}}
+                    {{else}}
+                        <tr>
+                            <td colspan="2">No metric KPI's specified</td>
+                        </tr>
+                    {{/if}}
+                        {{#if hasAdditionalRequirements}}
+                            {{#each additionalRequirements}}
+                        <tr>
+                            <th class="requirement-header">Additional requirements</th>
+                            <td>
+                                <span id="toggle-requirement-result" class="{{#if userHasPermissionForApplication}}show-pointer{{/if}}" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="{{#if userHasPermissionForApplication}}Click to toggle requirement result{{else}}Log in with authorised user to toggle requirement results{{/if}}">{{benchmarkResult reportRequirement.requirementResult}}</span>
+                                {{reportRequirement.requirementText}}
+                            </td>
+                        </tr>
+                        {{/each}}
+                    {{/if}}
+                <tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+</template>
+-->

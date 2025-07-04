@@ -1,0 +1,65 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="users">
+
+    <div class="perfana-content">
+
+        <div class="well">
+            <h5 class="well__heading">Users</h5>
+
+            <div>
+                {{> reactiveTable class="filter-table pointer table admin-users" collection=users fields=fields settings=settings}}
+            </div>
+<!--            <div class="text-right">-->
+<!--                <div id="add-user" class="btn btn-primary perfana-label perfana-btn" data-toggle="tooltip" data-placement="top" title="Add user">-->
+<!--                    Add user-->
+<!--                </div>-->
+<!--            </div>-->
+
+
+        </div>
+
+    </div>
+</template>
+
+<template name="addUserModal">
+    <div class="modal fade">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+                <div class="modal-body ">
+                    <div class="well">
+                        <h3>Add user</h3>
+                        <div class="form-group" style="margin-top:10px;">
+                            <label for="user-email">Email</label>
+                            <input type="email" class="form-control" id="user-email" placeholder="Email address">
+                        </div>
+                        <div class="form-group" style="margin-top:10px;">
+                            <label for="user-name">Name</label>
+                            <input type="text" class="form-control" id="user-name" placeholder="Name">
+                        </div>
+                        <div class="text-right">
+                            <div id="add-new-user" class="btn btn-primary perfana-label perfana-btn" data-toggle="tooltip" data-placement="top" title="Add user">
+                                Add user
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

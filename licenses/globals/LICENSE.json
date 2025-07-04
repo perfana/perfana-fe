@@ -1,0 +1,7 @@
+{
+  "name": "globals",
+  "version": "^13.24.0",
+  "license": "MIT",
+  "repository": "git+https://github.com/sindresorhus/globals.git",
+  "homepage": "https://github.com/sindresorhus/globals#readme"
+}

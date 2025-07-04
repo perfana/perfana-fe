@@ -1,0 +1,114 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunTraces">
+
+    <div class="perfana-content">
+        <div class="well" >
+            <h4>Filter traces</h4>
+            <form>
+
+                {{#if hasRequiremnts}}
+                    <div class="form-group">
+                        <label>Only show traces that fail to meet Service Level Objective</label>
+                        {{>testRunTraceRequirementSearchBox requirements=requirements}}
+                    </div>
+                {{/if}}
+                <div class="form-group">
+                    <label for="minDuration">Only show traces with duration longer than</label>
+                    <input type="text" class="form-control" id="minDuration" placeholder="ms" value="{{minDuration}}">
+                </div>
+                <div class="form-group">
+                    <label for="maxDuration">Only show traces with duration shorter than</label>
+                    <input type="text" class="form-control" id="maxDuration" placeholder="ms" value="{{maxDuration}}">
+                </div>
+        {{#if showRequestFilter}}
+                <div class="form-group">
+                    <label for="request-name-filter">Request name</label>
+                    <input type="text" class="form-control" id="request-name-filter" placeholder="Request name" value="{{requestNameFilter}}">
+                </div>
+        {{/if}}    
+            </form>
+
+        {{#if hasTestRunTraces}}
+            <div>
+                {{#each testRunTraces}}
+                    {{> testRunTrace}}
+                {{/each}}
+            </div>
+        {{ else }}
+            {{> testRunTraceAllRequests testRun=testRun}}
+        {{/if }}    
+        </div>
+   </div>
+</template>
+
+<template name="testRunTrace">
+    <div class="panel-group test-run-trace" id="dashboard-accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <div class="drilldown-accordion-toggle row perfana-panel-title" data-toggle="collapse"  href="#test-run-trace-accordion-{{slugify target}}">
+                        <div>
+                        {{# if iframeAllowed }}
+                            {{#if dashboardHeaderCollapsed}}
+<!--                                <div class="col-md-1 perfana-testrun-meta-data text-center">-->
+                                    <span><i class="fa fa-angle-right  perfana-traces-angle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i></span>
+<!--                                </div>-->
+                            {{ else }}
+<!--                                <div class="col-md-1 perfana-testrun-meta-data text-center">-->
+                                    <span><i class="fa fa-angle-down perfana-traces-angle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i></span>
+<!--                                </div>-->
+                            {{/if}}
+                        {{/if}}
+                            <span class="panel-title {{#unless iframeAllowed}}tracing-panel-title-margin{{/unless}}" >{{target}}</span>
+                            <span class="pull-right"><i id="tracing-link"  class="fa fa-external-link perfana-traces-external-link" data-toggle="tooltip" data-placement="top" title="Open in new tab"></i></span>
+
+                        </div>
+                    </div>
+                </h4>
+            </div>
+            {{# if iframeAllowed }}
+            <div id="test-run-trace-accordion-{{slugify target}}" class="panel-collapse collapse dashboard-collapse">
+                    {{# unless dashboardHeaderCollapsed}}
+                         <div class="panel-body">
+                            <iframe class="tracing-iframe" src="{{tracingUrl}}"  frameBorder="0"  width="100%" height="2000"></iframe>
+                        </div>
+                    {{/unless}}
+            </div>
+            {{/ if}}
+        </div>
+    </div>
+</template>
+
+<template name="testRunTraceAllRequests">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="panel-title">Traces</span> <span class="pull-right"><i id="tracing-link" class="fa fa-external-link" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Open in Jaeger"></i></span>
+        </div>
+        {{# if iframeAllowed }}
+            <div class="panel-body">
+                <iframe class="tracing-iframe" src="{{tracingUrl}}"  frameBorder="0"  width="100%" height="2000"></iframe>
+            </div>
+        {{/if}}
+    </div>
+</template>
+
+
+
+<template name="noTestRunTraces">
+        <div><p>No traces found for this test run</p></div>
+</template>

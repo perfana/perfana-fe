@@ -1,0 +1,7 @@
+{
+  "name": "mongodb",
+  "version": "^3.6.9",
+  "license": "Apache-2.0",
+  "repository": "git+ssh://git@github.com/mongodb/node-mongodb-native.git",
+  "homepage": "https://github.com/mongodb/node-mongodb-native"
+}

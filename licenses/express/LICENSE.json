@@ -1,0 +1,7 @@
+{
+  "name": "express",
+  "version": "^4.17.3",
+  "license": "MIT",
+  "repository": "git+https://github.com/expressjs/express.git",
+  "homepage": "https://expressjs.com/"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "bcrypt",
+  "version": "^5.0.1",
+  "license": "MIT",
+  "repository": "git+https://github.com/kelektiv/node.bcrypt.js.git",
+  "homepage": "https://github.com/kelektiv/node.bcrypt.js#readme"
+}

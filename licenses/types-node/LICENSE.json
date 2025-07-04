@@ -1,0 +1,7 @@
+{
+  "name": "@types/node",
+  "version": "^20.6.0",
+  "license": "MIT",
+  "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+  "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node"
+}

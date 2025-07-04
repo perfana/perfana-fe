@@ -1,0 +1,44 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunReportPanelAnnotation">
+    <div class="modal fade" id="testreport-panel-annotations-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Panel annotation</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <textarea id="annotations" class="form-control testrun-annotation">{{reportAnnotations.panel.annotation}}</textarea>
+                        <div class="form-check" style="margin-top:10px;">
+                            <input type="checkbox" class="form-check-input" id="set-as-default" checked={{setAsDefaultAnnotation}}>
+                            <label class="form-check-label" for="set-as-default">Set as default annotation</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-link" id="restore-default-annotation">Restore default annotation</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-testrun-annotations">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

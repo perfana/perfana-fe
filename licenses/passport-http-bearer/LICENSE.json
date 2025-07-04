@@ -1,0 +1,7 @@
+{
+  "name": "passport-http-bearer",
+  "version": "^1.0.1",
+  "license": "No license information available",
+  "repository": "git://github.com/jaredhanson/passport-http-bearer.git",
+  "homepage": "No homepage information available"
+}

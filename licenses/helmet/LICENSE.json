@@ -1,0 +1,7 @@
+{
+  "name": "helmet",
+  "version": "^4.2.0",
+  "license": "MIT",
+  "repository": "git://github.com/helmetjs/helmet.git",
+  "homepage": "https://helmetjs.github.io/"
+}

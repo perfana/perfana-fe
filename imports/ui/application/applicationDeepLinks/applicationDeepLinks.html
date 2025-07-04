@@ -1,0 +1,78 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="deepLinks">
+
+    <div class="perfana-content">
+        {{> perfanaBreadcrumb}}
+        <div class="well">
+            <h5 class="well__heading">Links for <span class="break-word label label-default" style="margin:5px;">{{application}}</span> | Environment <span class=" break-word label label-default" style="margin:5px;">{{testEnvironment}}</span> | Workload <span class=" break-word label label-default" style="margin:5px;">{{testType}}</span>
+            </h5>
+
+            {{> reactiveTable class="filter-table table" collection=deepLinks fields=fields settings=settings}}
+
+            <div class="text-right">
+                <div type="button" class="btn btn-primary perfana-label back perfana-btn">Back</div>
+
+                {{#if userHasPermissionForApplication}}
+                   <div id="add-annotations" type="button" class="btn btn-primary perfana-label perfana-btn">Add link</div>
+                {{/if}}
+            </div>
+
+
+        </div>
+    </div>
+</template>
+
+                       
+
+<template name="noDeepLinks">
+    {{#if userHasPermissionForApplication}}
+        <div><p>No links have been configured</p></div>
+    {{ else }}
+        <p>You are not allowed to add or edit links for this system under test</p>
+    {{/if}}
+</template>
+
+<template name="deepLinkModal">
+    <div class="modal fade" id="deep-link-modal">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Link</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="deep-link-name">Name</label>
+                        <input type="text" class="form-control deep-link-name" id="deep-link-name" placeholder="Name" value="{{name}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="deep-link-url">Url</label>
+                        <textarea  class="form-control deep-link" id="deep-link-url" placeholder="Url, type '{' to select variable" value="{{url}}"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-testrun-annotations">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

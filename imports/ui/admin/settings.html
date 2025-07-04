@@ -1,0 +1,84 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="settings">
+
+    <div class="perfana-content">
+        <div class="well">
+          <h5 class="well__heading">Perfana Settings</h5>
+
+            <div>
+                {{> reactiveTable class="filter-table table pointer " collection=perfanaSettings fields=perfanaSettingsFields settings=settings }}
+            </div>
+
+        </div>
+        <div class="well">
+          <h5 class="well__heading">Retentions Settings</h5>
+
+            <div>
+                {{> reactiveTable class="filter-table table pointer " collection=datasourceRetention fields=datasourceRetentionFields settings=settings }}
+            </div>
+
+        </div>
+
+        {{#if hasCustomAlerts}}
+            <div class="well">
+              <h5 class="well__heading">Custom alert tags</h5>
+
+                <div>
+                    {{> reactiveTable class="filter-table table pointer " collection=customAlertTags fields=customAlertTagsFields settings=settings }}
+                </div>
+
+            </div>
+        {{/if}}
+        {{#if hasOmitAlertTags}}
+            <div class="well">
+              <h5 class="well__heading">Tags to omit in alerts</h5>
+
+                <div>
+                    {{> reactiveTable class="filter-table table pointer " collection=omitAlertTags fields=omitAlertTagsFields settings=settings }}
+                </div>
+
+            </div>
+        {{/if}}
+        <div class="well">
+          <h5 class="well__heading">Miscellaneous settings</h5>
+
+            <div>
+                {{> reactiveTable class="filter-table table pointer " collection=miscSettings fields=miscSettingsFields settings=settings }}
+            </div>
+
+        </div>
+        {{#if heapDumpEnabled}}
+            <div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 class="perfana-summery-header">Create heap dump</h5>
+                    </div>
+                    <div class="panel-body">
+                        <div class="btn-wrapper">
+                            <div class="text-left">
+                                <div type="button" class="btn btn-primary perfana-label create-heapdump perfana-btn ">Create heap dump</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+
+    </div>
+</template>
+

@@ -1,0 +1,7 @@
+{
+  "name": "@babel/core",
+  "version": "^7.26.10",
+  "license": "MIT",
+  "repository": "https://github.com/babel/babel.git",
+  "homepage": "https://babel.dev/docs/en/next/babel-core"
+}

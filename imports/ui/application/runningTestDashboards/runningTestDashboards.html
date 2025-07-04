@@ -1,0 +1,219 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="runningTestDashboards">
+    <div class="perfana-content">
+        <div>
+            <p>
+                {{> perfanaBreadcrumb}}
+            </p>
+            <div role="tabpanel" class="tab-pane" id="configuration">
+                <ul class="nav nav-tabs running-test" role="tablist">
+                    {{#if hasKeyMetrics}}
+                        <li role="presentation" class="{{#if tabActive '#key-metrics' }}active{{/if}}"><a href="#key-metrics" role="tab" data-toggle="tab">Service Level Indicators</a></li>
+                        <!--                        <li role="presentation"><a href="#key-metrics-carousel" role="tab" data-toggle="tab">Service Level Indicators carousel</a></li>-->
+                    {{/if}}
+                    <li role="presentation" class="{{#if tabActive '#dashboards' }}active{{/if}}"><a href="#dashboards" role="tab" data-toggle="tab">Dashboards</a></li>
+                    {{#if hasConfiguration}}
+                        <li role="presentation"><a href="#config" role="tab" data-toggle="tab">Configuration</a></li>
+                    {{/if}}
+                    {{#if tracingService}}
+                        <li role="presentation" class="{{#if tabActive '#traces' }}active{{/if}}"><a href="#traces" role="tab" data-toggle="tab">Traces</a></li>
+                    {{/if}}
+                    {{#if pyroScopeConfigured}}
+                        <li role="presentation" class="{{#if tabActive '#pyroscope' }}active{{/if}}"><a href="#pyroscope" role="tab" data-toggle="tab">Pyroscope</a></li>
+                    {{/if}}
+                    {{#if dynatraceInLicense}}
+                        {{#if dynatraceConfigured}}
+                            <li role="presentation" class="{{#if tabActive '#dynatrace' }}active{{/if}}"><a href="#dynatrace" role="tab" data-toggle="tab">Dynatrace</a></li>
+                        {{/if}}
+                    {{/if}}
+                    {{#if testRunHasLinks }}
+                        <li role="presentation" class="{{#if tabActive '#links' }}active{{/if}}"><a href="#links" role="tab" data-toggle="tab">Links</a></li>
+                    {{/if}}
+                </ul>
+                {{#if tabActive '#key-metrics' }}
+                    {{#if showCarousel }}
+                        <div class="text-center">
+                            <div id="carousel-interval" class="btn-group" role="group" aria-label="Carousel interval">
+                                <button type="button" id="interval-10" class="btn btn-secondary active">10s</button>
+                                <button type="button" id="interval-15" class="btn btn-secondary">15s</button>
+                                <button type="button" id="interval-20" class="btn btn-secondary">20s</button>
+                                <button type="button" id="interval-30" class="btn btn-secondary">30s</button>
+                            </div>
+                        </div>
+
+                    {{/if}}
+                {{/if}}
+                <div class="tab-content">
+
+                    <div role="tabpanel" class="tab-pane {{#if tabActive '#dashboards' }}active{{/if}}" id="dashboards">
+                        <div class="well">
+                        {{#if tabActive '#dashboards' }}
+                            <div class="input-group dashboard-filter col-md-3 pull-right">
+                                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                                <input type="text" class="form-control" id="dashboard-filter" placeholder="Filter" value="{{dashboardFilter}}">
+                                <span class="input-group-addon clear-filter"><i class="fa fa-times reactive-table-icon"></i></span>
+
+                            </div>
+                            <div>
+                                <div role="tabpanel" class="tab-pane" id="application-dashboard-tabs">
+                                    <ul class="nav nav-tabs application-dashboard-tags" role="tablist">
+                                        <li role="presentation" class="active"><a href="#all" role="tab" data-toggle="tab">All</a></li>
+                                        {{# each applicationDashboardsTags }}
+                                            <li role="presentation"><a href="#{{@index}}" role="tab" data-toggle="tab">{{this}}</a></li>
+                                        {{/ each}}
+                                    </ul>
+                                </div>
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane active" id="all">
+                                        {{#if applicationDashboardTagTabActive 'all' }}
+                                            {{#each applicationDashboards}}
+                                                {{> runningTestDashboardsAccordion  }}
+                                            {{/each}}
+                                        {{/if}}
+                                    </div>
+                                    {{# each applicationDashboardsTags }}
+                                        <div role="tabpanel" class="tab-pane" id="{{@index}}">
+                                            {{#if applicationDashboardTagTabActive @index }}
+                                                {{#each applicationDashboards}}
+                                                    {{> runningTestDashboardsAccordion  }}
+                                                {{/each}}
+                                            {{/if}}
+                                        </div>
+                                    {{/ each}}
+                                </div>
+                            </div>
+                        {{/if}}
+
+                        </div>
+                    </div>
+                {{#if hasKeyMetrics}}
+
+                    <div role="tabpanel" class="tab-pane {{#if tabActive '#key-metrics' }}active{{/if}}"  id="key-metrics">
+
+                        {{#if tabActive '#key-metrics' }}
+
+                            {{#if showCarousel }}
+                                <div>
+                                    {{> runningTestCarousel }}
+                                </div>
+                            {{else}}
+                                <div>
+                                    {{> testRunKeyMetrics runningTest=true }}
+                                </div>
+                            {{/if}}
+
+                        {{/if}}
+                    </div>
+<!--                    <div role="tabpanel" class="tab-pane" id="key-metrics-carousel">-->
+<!--                        {{#if tabActive '#key-metrics-carousel' }}-->
+
+<!--                            <div>-->
+<!--                                {{> runningTestCarousel }}-->
+<!--                            </div>-->
+
+
+<!--                        {{/if}}-->
+<!--                    </div>-->
+                {{/if}}
+                {{#if tabActive '#config' }}
+                    <div role="tabpanel" class="tab-pane {{#if tabActive '#config' }}active{{/if}}" id="config">
+                            {{> testRunConfig testRun=testRun}}
+                    </div>
+                {{/if}}
+                {{#if tabActive '#traces' }}
+                    <div role="tabpanel" class="tab-pane {{#if tabActive '#traces' }}active{{/if}}" id="traces">
+                        {{> testRunTraces testRun=testRun}}
+                    </div>
+                {{/if}}
+                {{#if tabActive '#pyroscope' }}
+                    <div role="tabpanel" class="tab-pane {{#if tabActive '#pyroscope' }}active{{/if}}" id="pyroscope">
+                        {{> testRunPyroscope testRun=testRun}}
+                    </div>
+                {{/if}}
+                {{#if tabActive '#dynatrace' }}
+                    {{#if dynatraceInLicense}}
+                        <div role="tabpanel" class="tab-pane {{#if tabActive '#dynatrace' }}active{{/if}}" id="dynatrace">
+                            {{> testRunDynatraces testRun=testRun}}
+                        </div>
+                    {{/if}}
+                {{/if}}
+                {{#if tabActive '#links' }}
+                    <div role="tabpanel" class="tab-pane {{#if tabActive '#links' }}active{{/if}}" id="links">
+                        {{>testRunLinks testRun=testRun}}
+                    </div>
+                {{/if}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="runningTestDashboardsAccordion">
+    <div class="panel-group comparison-details-dashboards" id="dashboard-accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#dashboard-accordion-{{slugify dashboardLabel}}-{{dashboardUid}}">
+                        <!--                        <div style="width: 100%;">-->
+                        <div class="col-md-11">
+                            {{#if metricHeaderCollapsed}}
+                                <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                    <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                                </div>
+                            {{ else }}
+                                <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                    <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                                </div>
+                            {{/if}}
+                            <div class="drilldown-accordion-toggle col-md-11 perfana-testrun-meta-data" >{{dashboardLabel}}</div>
+
+                        </div>
+
+                        <div class="col-md-1">
+                            {{#if userHasPermissionForApplication}}
+                                <div>
+                                    <i id="open-key-metrics-modal"  class="fa fa-check-square-o col-md-3" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Add Service Level Indicator"></i>
+                                </div>
+                            {{/if}}
+                            <div>
+                                <i id="grafana-dashboard-link" class="fa fa-external-link   col-md-3" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Open in Grafana"></i>
+                            </div>
+                        </div>
+                    </div>
+                </h4>
+            </div>
+            <div id="dashboard-accordion-{{slugify dashboardLabel}}-{{dashboardUid}}" class="panel-collapse collapse metric-collapse">
+                <div class="panel-body">
+                {{#unless metricHeaderCollapsed}}
+                    {{> runningTestDashboardIframe }}
+                {{/unless}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<template name="runningTestDashboardIframe">
+
+    <div style="text-align:center">
+         <iframe height="{{windowHeight}}" width="100%" src="{{grafanaUrl}}" frameborder="0" allowfullscreen=""></iframe>
+    </div>
+</template>
+

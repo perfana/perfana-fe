@@ -1,0 +1,614 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunDataScienceCompareResults">
+    <div class="panel panel-default">
+        <div class="panel-heading panel-heading-with-filter">
+            <h4>Automated Deviation Analysis for Performance Testing <span class="label label-default beta">BETA</span></h4>
+            <div class="pull-right">
+                {{#if regressionsDetectedAndOKSLO}}
+                    <span>
+                        <div type="button" class="btn btn-primary perfana-label perfana-btn alert-success" id="mark-as-variability">Mark as variability  <i id="mark-as-regression-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="Click to mark the detected regression as variability and keep this test run in the control group used as baseline for future runs"></i></div>
+                    </span>
+                    <span>
+                        <div type="button" class="btn btn-primary perfana-label perfana-btn alert-danger" id="mark-as-regression">Confirm regression  <i id="mark-as-regression-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="Click to confirm the detected regression and exclude this test run from the control group used as baseline for future runs. Since the test run meets the Service Level Objectives for this test run you might want to review those."></i></div>
+                    </span>
+                {{ else }}
+                    {{#if regressionsAccepted}}
+                        <span>
+                            <div type="button" class="btn btn-primary perfana-label perfana-btn alert-danger" id="mark-as-regression">Mark as regression  <i id="mark-as-regression-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="Click to confirm the detected regression and exclude this test run from the control group used as baseline for future runs. Since the test run meets the Service Level Objectives for this test run you might want to review those."></i></div>
+                        </span>
+                    {{ else }}
+                        {{#if regressionsConfirmed}}
+                            <span>
+                                <div type="button" class="btn btn-primary perfana-label perfana-btn alert-success" id="mark-as-variability">Mark as variability  <i id="mark-as-regression-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="Click to mark the detected regression as variability and keep this test run in the control group used as baseline for future runs"></i></div>
+                            </span>
+                        {{/if}}
+                    {{/if}}
+                {{/if}}
+                {{#unless testRunIsChangePoint}}
+                    <span>
+                        <div type="button" class="btn btn-primary perfana-label perfana-btn" id="reset-control-group">Mark as change point  <i id="mark-as-regression-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="By marking this test run as a changepoint the current control group test runs will no longer be used as a baseline. After setting a changepoint, it is good practice to run a few tests with the same version of the system under test in baseline mode, to add some test runs to the new control group and improve the quality of the baseline"></i></div>
+                    </span>
+                {{/unless}}
+            </div>
+        </div>
+        <div class="panel-body">
+            {{#if hasPendingDsCompareConfigChanges}}
+                <div class="alert alert-warning">
+                    <strong>Pending ADAPT configuration changes</strong>
+                    <p>You have made changes to the ADAPT configuration that have not been processed yet. If you are finished updating the ADAPT configuration, click "Apply" to re-run the ADAPT analysis</p>
+                    <div class="text-right">
+                        <div type="button" class="btn btn-primary perfana-label perfana-btn process-pending-ds-compare-config-changes">
+                            Apply
+                        </div>
+                        <div class="form-check pending-ds-compare-config-changes">
+                            <input class="form-check-input" type="checkbox" checked="{{includeControlGroup}}" id="includeControlGroup">
+                            <label class="form-check-label" for="includeControlGroup">Apply to control group test runs</label>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+            <div class="class show-metrics-select">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item active" role="presentation">
+                        <a class="nav-link " id="show-regression" data-toggle="tab" href="#tab-show-regression" role="tab">Regression</a>
+                    </li>
+<!--                    {{#if trackedRegressionDetected}}-->
+<!--                        <li class="nav-item" role="presentation">-->
+<!--                            <a class="nav-link " id="show-unresolved-regression" data-toggle="tab" href="#tab-show-unresolved-regression" role="tab">Unresolved regression</a>-->
+<!--                        </li>-->
+<!--                    {{/if}}-->
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="show-improvements" data-toggle="tab" href="#tab-show-improvements" role="tab">Improvements</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="show-no-difference" data-toggle="tab" href="#tab-show-no-difference" role="tab">No significant differences</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="show-no-comparison" data-toggle="tab" href="#tab-show-no-comparison" role="tab">No comparison possible</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="show-filtered" data-toggle="tab" href="#tab-show-filtered" role="tab">Non-default thresholds</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="show-ignored" data-toggle="tab" href="#tab-show-ignored" role="tab">Excluded</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="show-all-metrics" data-toggle="tab" href="#tab-show-all-metrics" role="tab">All</a>
+                    </li>
+                    {{#if regressionsAccepted}}
+                        <div class="pull-right">
+                            <span class="break-word label label-success" style="font-size: 14px;">Accepted as variability</span>
+                        </div>
+                    {{ else }}
+                        {{#if regressionsConfirmed}}
+                            <div class="pull-right">
+                                <span class="break-word label label-danger" style="font-size: 14px;">Confirmed as regression</span>
+                            </div>
+                        {{/if}}
+                    {{/if}}
+                </ul>
+
+            </div>
+            {{#if dsAdaptResultsSubscriptionReady}}
+                {{#if allMetrics}}
+                    {{> allMetricsTable metrics=metrics }}
+                {{else}}
+<!--                    {{#if trackedRegressionSelected}}-->
+<!--                        {{>trackedRegression trackedRegressions=trackedRegressions}}-->
+<!--                    {{else}}-->
+                        {{#if metricsDetected}}
+                        {{#if redMetrics.length}}
+                            {{> testRunDataScienceCompareResultsRedTLDR metrics=redMetrics comparisonType=comparisonType conclusion=conclusion}}
+                        {{/if}}
+                        {{#if useMetrics.length}}
+                            {{> testRunDataScienceCompareResultsUseTLDR metrics=useMetrics comparisonType=comparisonType conclusion=conclusion }}
+                        {{/if}}
+                        {{#if unclassifiedMetrics.length}}
+                            {{> testRunDataScienceCompareResultsUnclassifiedTLDR metrics=unclassifiedMetrics comparisonType=comparisonType conclusion=conclusion}}
+                        {{/if}}
+                        {{else}}
+                            {{> noChangedMetrics}}
+                        {{/if}}
+<!--                    {{/if}}-->
+                {{/if}}
+            {{ else }}
+                <i  class="fa fa-lg fa-refresh fa-spin reactive-table-icon " aria-hidden="true"></i>
+            {{/if}}
+        </div>
+    </div>
+</template>
+
+<template name="testRunDataScienceCompareResultsBaselineTestRun">
+    <div class="panel panel-default">
+        <div class="panel-heading panel-heading-with-filter">
+            <h5 class="perfana-summery-header col-md-6">Compared to {{#if comparePreviousTestRun }} previous {{else}} baseline {{/if}} test run <br><strong>{{#if comparePreviousTestRun }}{{previousTestRunLink}}{{else}}{{baselineTestRunLink}}{{/if}}</strong></h5>
+        </div>
+        <div class="panel-body">
+            {{> testRunDataScienceCompareResultsRedTLDR metrics=redMetrics comparisonType=comparisonType}}
+<!--            {{> testRunDataScienceCompareResultsUseTLDR metrics=useMetrics totalMetrics=totalMetrics}}-->
+<!--            {{> testRunDataScienceCompareResultsUseTLDR }}-->
+        </div>
+<!--        <div class="panel-body">-->
+<!--            {{> testRunDataScienceCompareResultsUseTLDR}}-->
+<!--        </div>-->
+    </div>
+</template>
+
+<template name="testRunDataScienceCompareResultsRedTLDR">
+    <div class="panel panel-default">
+        <div class="panel-heading panel-heading-with-filter">
+            <h4 class="perfana-summery-header col-md-6"><strong>RED metrics</strong></h4>
+        </div>
+        <div class="panel-body">
+            {{> testRunDataScienceCompareResultsRedTLDRAccordion redMetrics=redMetrics comparisonType=comparisonType conclusion=conclusion}}
+        </div>
+    </div>
+</template>
+
+<template name="testRunDataScienceCompareResultsUseTLDR">
+    <div class="panel panel-default">
+        <div class="panel-heading panel-heading-with-filter">
+            <h4 class="perfana-summery-header col-md-6"><strong>USE metrics</strong></h4>
+        </div>
+        <div class="panel-body">
+            {{> testRunDataScienceCompareResultsUseTLDRAccordion useMetrics=useMetrics comparisonType=comparisonType conclusion=conclusion}}
+        </div>
+    </div>
+</template>
+
+<template name="testRunDataScienceCompareResultsUnclassifiedTLDR">
+    <div class="panel panel-default">
+        <div class="panel-heading panel-heading-with-filter">
+            <h4 class="perfana-summery-header col-md-6"><strong>Unclassified metrics</strong></h4>
+        </div>
+        <div class="panel-body">
+            {{> testRunDataScienceCompareResultsUnclassifiedAccordion unclassifiedMetrics=unclassifiedMetrics comparisonType=comparisonType conclusion=conclusion}}
+        </div>
+    </div>
+</template>
+
+
+<template name="testRunDataScienceCompareResultsRedTLDRAccordion">
+    <div class="panel-group comparison-details-dashboards" id="ds-tldr-red-accordion">
+        {{#if redRateMetrics.length}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#{{comparisonType}}-ds-tldr-red-rate-accordion">
+                        {{#if redRateMetricHeaderCollapsed}}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                        {{ else }}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                        {{/if}}
+                        <!--                        <div class="drilldown-accordion-toggle col-md-8 perfana-testrun-meta-data check-result-title" >{{dashboardLabel}} | {{humanReadablePanelTitle panelTitle}} | {{humanReadableEvaluateType evaluateType}}</div>-->
+                        <div class="drilldown-accordion-toggle col-md-2 perfana-testrun-meta-data check-result-title" >
+                            <span class="red-use-title">Rate</span>
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-5">
+                            <span class="metric-difference-text">{{RED_rate_text}}</span>
+                        </div>
+                        <div class="col-md-1">
+                        {{#if conclusionIsRegression}}
+                            {{#if RED_rate_thresholdExceeded}}
+                                <i class="fa fa-exclamation-circle" style="color: red;" aria-hidden="true"></i>
+                            {{else}}
+                                <i class="fa fa-check" style="color: green;" aria-hidden="true"></i>
+                            {{/if}}
+                        {{/if}}
+                        </div>
+
+
+                    </div>
+                </h5>
+            </div>
+            <div id="{{comparisonType}}-ds-tldr-red-rate-accordion" class="panel-collapse collapse red-rate">
+                {{#unless redRateMetricHeaderCollapsed }}
+                <div class="panel-body">
+                {{#if noChanges redRateMetrics }}
+                    {{> noChangedMetrics}}
+                {{ else }}
+                    {{> testRunDataScienceCompareResultsDetails metrics=redRateMetrics comparisonType=comparisonType metricType="RED_rate"}}
+                {{/if}}
+                </div>
+                {{/unless}}
+            </div>
+        </div>
+        {{/if}}
+        {{#if redErrorsMetrics.length}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#{{comparisonType}}-ds-tldr-red-errors-accordion">
+                        {{#if redErrorsMetricHeaderCollapsed}}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                        {{ else }}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                        {{/if}}
+                        <!--                        <div class="drilldown-accordion-toggle col-md-8 perfana-testrun-meta-data check-result-title" >{{dashboardLabel}} | {{humanReadablePanelTitle panelTitle}} | {{humanReadableEvaluateType evaluateType}}</div>-->
+                        <div class="drilldown-accordion-toggle col-md-2 perfana-testrun-meta-data check-result-title" >
+                            <span class="red-use-title">Errors</span>
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-5">
+                            <span class="metric-difference-text">{{RED_errors_text}}</span>
+                        </div>
+                        <div class="col-md-1">
+                        {{#if conclusionIsRegression}}
+                            {{#if RED_errors_thresholdExceeded}}
+                                <i class="fa fa-exclamation-circle" style="color: red;" aria-hidden="true"></i>
+                            {{else}}
+                                <i class="fa fa-check" style="color: green;" aria-hidden="true"></i>
+                            {{/if}}
+                        {{/if}}
+                        </div>
+
+
+                    </div>
+                </h5>
+            </div>
+            <div id="{{comparisonType}}-ds-tldr-red-errors-accordion" class="panel-collapse collapse red-errors">
+                {{#unless redErrorsMetricHeaderCollapsed }}
+                    <div class="panel-body">
+                        {{#if noChanges redErrorsMetrics }}
+                            {{> noChangedMetrics}}
+                        {{ else }}
+                            {{> testRunDataScienceCompareResultsDetails metrics=redErrorsMetrics comparisonType=comparisonType  metricType="RED_errors"}}
+                        {{/if}}
+                    </div>
+                {{/unless}}
+            </div>
+        </div>
+        {{/if}}
+        {{#if redDurationMetrics.length}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#{{comparisonType}}-ds-tldr-red-duration-accordion">
+                        {{#if redDurationMetricHeaderCollapsed}}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                        {{ else }}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                        {{/if}}
+                        <div class="drilldown-accordion-toggle col-md-2 perfana-testrun-meta-data check-result-title" >
+                            <span class="red-use-title">Duration</span>
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-5">
+                            <span class="metric-difference-text">{{RED_duration_text}}</span>
+                        </div>
+                        <div class="col-md-1">
+                        {{#if conclusionIsRegression}}
+                            {{#if RED_duration_thresholdExceeded}}
+                                <i class="fa fa-exclamation-circle" style="color: red;" aria-hidden="true"></i>
+                            {{else}}
+                                <i class="fa fa-check" style="color: green;" aria-hidden="true"></i>
+                            {{/if}}
+                        {{/if}}
+                        </div>
+
+
+                    </div>
+                </h5>
+            </div>
+            <div id="{{comparisonType}}-ds-tldr-red-duration-accordion" class="panel-collapse collapse  red-duration">
+                {{#unless redDurationMetricHeaderCollapsed }}
+                    <div class="panel-body">
+                        {{#if noChanges redDurationMetrics }}
+                        {{> noChangedMetrics}}
+                    {{ else }}
+                        {{> testRunDataScienceCompareResultsDetails metrics=redDurationMetrics comparisonType=comparisonType  metricType="RED_duration"}}
+                    {{/if}}
+                    </div>
+                {{/unless}}
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</template>
+
+<template name="testRunDataScienceCompareResultsUnclassifiedAccordion">
+    <div class="panel-group comparison-details-dashboards" id="ds-tldr-unclassified-accordion">
+    {{#if unclassifiedMetrics.length}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#{{comparisonType}}-ds-tldr-unclassified-accordion">
+                        {{#if metricHeaderCollapsed}}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                        {{ else }}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                        {{/if}}
+                        <div class="drilldown-accordion-toggle col-md-2 perfana-testrun-meta-data check-result-title" >
+                            <span class="unclassified-title">Unclassified</span>
+                        </div>
+                        <div class="col-md-3"></div>
+                        <div class="col-md-5">
+                            <span class="metric-difference-text">{{unclassifiedText}}</span>
+                        </div>
+                    </div>
+                </h5>
+            </div>
+            <div id="{{comparisonType}}-ds-tldr-unclassified-accordion" class="panel-collapse collapse metric-collapse">
+                {{#unless metricHeaderCollapsed }}
+                    <div class="panel-body">
+                        {{#if noChanges unclassifiedMetrics }}
+                            {{> noChangedMetrics}}
+                        {{ else }}
+                            {{> testRunDataScienceCompareResultsDetails metrics=unclassifiedMetrics comparisonType=comparisonType  metricType="Unclassified"}}
+                        {{/if}}
+                    </div>
+                {{/unless}}
+            </div>
+        </div>
+    {{/if}}
+    </div>
+</template>
+
+<template name="testRunDataScienceCompareResultsUseTLDRAccordion">
+    <div class="panel-group comparison-details-dashboards" id="ds-tldr-use-accordion">
+    {{#if useUsageMetrics.length}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#{{comparisonType}}-ds-tldr-use-usage-accordion">
+                        {{#if useUsageMetricHeaderCollapsed}}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                        {{ else }}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                        {{/if}}
+                        <!--                        <div class="drilldown-accordion-toggle col-md-8 perfana-testrun-meta-data check-result-title" >{{dashboardLabel}} | {{humanReadablePanelTitle panelTitle}} | {{humanReadableEvaluateType evaluateType}}</div>-->
+                        <div class="drilldown-accordion-toggle col-md-2 perfana-testrun-meta-data check-result-title" >
+                            <span class="red-use-title">Utilization</span>
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-5">
+                            <span class="metric-difference-text">{{USE_usage_text}}</span>
+                        </div>
+                        <div class="col-md-1">
+                        {{#if conclusionIsRegression}}
+                            {{#if USE_usage_thresholdExceeded}}
+                                <i class="fa fa-exclamation-circle" style="color: red;" aria-hidden="true"></i>
+                            {{else}}
+                                <i class="fa fa-check" style="color: green;" aria-hidden="true"></i>
+                            {{/if}}
+                        {{/if}}
+                        </div>
+                    </div>
+                </h5>
+            </div>
+            <div id="{{comparisonType}}-ds-tldr-use-usage-accordion" class="panel-collapse collapse use-usage">
+                {{#unless useUsageMetricHeaderCollapsed }}
+                <div class="panel-body">
+                {{#if noChanges useUsageMetrics }}
+                    {{> noChangedMetrics}}
+                {{ else }}
+                    {{> testRunDataScienceCompareResultsDetails metrics=useUsageMetrics comparisonType=comparisonType metricType="USE_usage"}}
+                {{/if}}
+                </div>
+                {{/unless}}
+            </div>
+        </div>
+        {{/if}}
+        {{#if useSaturationMetrics.length}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#{{comparisonType}}-ds-tldr-use-saturation-accordion">
+                        {{#if useSaturationMetricHeaderCollapsed}}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                        {{ else }}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                        {{/if}}
+                        <!--                        <div class="drilldown-accordion-toggle col-md-8 perfana-testrun-meta-data check-result-title" >{{dashboardLabel}} | {{humanReadablePanelTitle panelTitle}} | {{humanReadableEvaluateType evaluateType}}</div>-->
+                        <div class="drilldown-accordion-toggle col-md-2 perfana-testrun-meta-data check-result-title" >
+                            <span class="red-use-title">Saturation</span>
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-5">
+                            <span class="metric-difference-text">{{USE_saturation_text}}</span>
+                        </div>
+                        <div class="col-md-1">
+                        {{#if conclusionIsRegression}}
+                            {{#if USE_saturation_thresholdExceeded}}
+                                    <i class="fa fa-exclamation-circle" style="color: red;" aria-hidden="true"></i>
+                            {{else}}
+                                    <i class="fa fa-check" style="color: green;" aria-hidden="true"></i>
+                            {{/if}}
+                        {{/if}}
+                        </div>
+
+
+                    </div>
+                </h5>
+            </div>
+            <div id="{{comparisonType}}-ds-tldr-use-saturation-accordion" class="panel-collapse collapse use-saturation">
+                {{#unless useSaturationMetricHeaderCollapsed }}
+                    <div class="panel-body">
+                    {{#if noChanges useSaturationMetrics }}
+                        {{> noChangedMetrics}}
+                    {{ else }}
+                        {{> testRunDataScienceCompareResultsDetails metrics=useSaturationMetrics comparisonType=comparisonType metricType="USE_saturation"}}
+                    {{/if}}
+                    </div>
+                {{/unless}}
+            </div>
+        </div>
+        {{/if}}
+        {{#if useErrorsMetrics.length}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <div class="drilldown-accordion-toggle row" data-toggle="collapse"  href="#{{comparisonType}}-ds-tldr-use-errors-accordion">
+                        {{#if useErrorsMetricHeaderCollapsed}}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Expand"></i>
+                            </div>
+                        {{ else }}
+                            <div class="col-md-1 perfana-testrun-meta-data text-center">
+                                <i class="fa fa-angle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Collapse"></i>
+                            </div>
+                        {{/if}}
+                        <div class="drilldown-accordion-toggle col-md-2 perfana-testrun-meta-data check-result-title" >
+                            <span class="red-use-title">Errors</span>
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-5">
+                            <span class="metric-difference-text">{{USE_errors_text}}</span>
+                        </div>
+                        <div class="col-md-1">
+                        {{#if conclusionIsRegression}}
+                            {{#if USE_errors_thresholdExceeded}}
+                                <i class="fa fa-exclamation-circle" style="color: red;" aria-hidden="true"></i>
+                            {{else}}
+                                <i class="fa fa-check" style="color: green;" aria-hidden="true"></i>
+                            {{/if}}
+                        {{/if}}
+                        </div>
+                    </div>
+                </h5>
+            </div>
+            <div id="{{comparisonType}}-ds-tldr-use-errors-accordion" class="panel-collapse collapse use-errors">
+                {{#unless useErrorsMetricHeaderCollapsed }}
+                    <div class="panel-body">
+                    {{#if noChanges useErrorsMetrics }}
+                        {{> noChangedMetrics}}
+                    {{ else }}
+                        {{> testRunDataScienceCompareResultsDetails metrics=useErrorsMetrics comparisonType=comparisonType metricType="USE_errors"}}
+                    {{/if}}
+                    </div>
+                {{/unless}}
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</template>
+
+
+<template name="testRunDataScienceCompareResultsDetails">
+    {{#if showFilter}}
+        <div class="reactive-table-input-div">
+            {{> reactiveTableFilter id=metricNameFilter }}
+        </div>
+
+    {{/if}}
+    {{#if hasMetrics}}
+        {{> reactiveTable class="table" collection=metrics fields=fields settings=settings rowClass=rowClass selectedMetricName=selectedMetricName }}
+        <div class="metric-details col-md-12">
+            <div role="tabpanel" class="tab-pane" id="configuration">
+                <ul class="nav nav-tabs adapt-details" role="tablist">
+                    <li role="presentation" class="active" ><a href="#overview" role="tab" data-toggle="tab">Trend</a></li>
+                    <li role="presentation"><a href="#details" role="tab" data-toggle="tab">Test run details</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="overview">
+                        {{#if tabActive '#overview' }}
+                            <div class="col-md-8">
+                                {{> visualizeTrackedDifferences showTitle=true metricName=metricName applicationDashboardId=applicationDashboardId panelId=panelId panelTitle=panelTitle testRunId=testRunId showThresholdsLegend=true dashboardLabel=dashboardLabel clickTestRunToOpenTestRun=false}}
+                            </div>
+                            <div class="col-md-4">
+                                {{> differenceDetails dsCompareStatistics=dsCompareStatistics metric=metric   }}
+                            </div>
+                        {{/if}}
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="details">
+                        {{#if tabActive '#details' }}
+                            <div class="col-md-8">
+                                {{> visualizeDifferenceDs comparisonType=comparisonType showTitle=true panelYAxesFormat=panelYAxesFormat metric=metric testRunId=testRunId }}
+                            </div>
+                            <div class="col-md-4">
+                                {{> differenceDetails dsCompareStatistics=dsCompareStatistics metric=metric   }}
+                            </div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {{/if}}
+</template>
+
+<template name="differenceDetails">
+    <div class="difference-details">
+        <div>
+            <h4>Details</h4>
+        </div>
+        <div>
+            <div>
+                {{> reactiveTable class="table" collection=details fields=detailsFields settings=settings rowClass="difference-scores" }}
+            </div>
+
+        </div>
+        <div>
+            <h4>Thresholds</h4>
+        </div>
+        <div>
+            {{> reactiveTable class="table" collection=scores fields=fields settings=settings rowClass="difference-scores"}}
+        </div>
+
+        <div>
+            <h4>Conclusion</h4>
+            <p>{{ conclusion }}</p>
+        </div>
+    </div>
+</template>
+
+<template name="noChangedMetrics">
+    <p id="no-metrics-with-regression">No metrics found</p>
+</template>
+
+
+<template name="visualizeDifferenceDs">
+    <div class="ds-visualize-diff-graph" id="{{divId}}"></div>
+</template>
+
+
+<template name="visualizeDifference">
+    <div id="line-chart-{{applicationDashboardId}}-{{panelId}}-{{slugify metricName}}">
+    </div>
+</template>

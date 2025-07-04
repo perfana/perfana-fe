@@ -1,0 +1,7 @@
+{
+  "name": "plotly.js-dist",
+  "version": "^2.28.0",
+  "license": "MIT",
+  "repository": "git+https://github.com/plotly/plotly.js.git",
+  "homepage": "https://github.com/plotly/plotly.js#readme"
+}

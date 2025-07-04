@@ -1,0 +1,124 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="compareResults">
+
+    <div class="perfana-content">
+        <div class="well">
+
+            <h5 class="well__heading">Comparison results</h5>
+
+            <div>
+                {{> reactiveTable class="filter-table pointer table compare-results" collection=compareResults fields=fields settings=settings rowClass=rowClass selectedCompareResultLabel=selectedCompareResultLabel}}
+            </div>
+<!--            {{#unless snapshotMissing}}-->
+                <div class="text-right">
+                    <button type="button" class="btn btn-default btn-primary add-comparison" data-dismiss="modal">Add comparison</button>
+                </div>
+<!--            {{/unless}}-->
+
+        </div>
+        {{# if compareResultSelected}}
+<!--            <div class="well" >-->
+<!--                <h5 class="well__heading">{{selectedCompareResultLabel}}</h5>-->
+                {{> compareResultDetails compareResultLabel=selectedcompareResultLabel }}
+<!--            </div>-->
+        {{/if}}
+
+
+    </div>
+</template>
+
+
+<template name="noCompareResults">
+        <div><p>No comparison results found</p></div>
+</template>
+
+<template name="addComparisonModal">
+    <div class="modal fade">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+
+                <!--<div class="modal-header">-->
+                <!--<h4 class="modal-title">Benchmark</h4>-->
+                <!--</div>-->
+
+                <div class="modal-body ">
+                    <div class="well">
+                        <h3>Add new test run comparison</h3>
+                        <h4 class="well__heading">Select baseline test run</h4>
+                        {{> testRunSearchBox }}
+                        {{#if testRunSelected}}
+                            <h4 class="well__heading">Select comparison type</h4>
+                            {{>comparisonTypeSearchBox}}
+                            {{#if comparisonTypeSelected}}
+                                {{#if customComparison}}
+                                    <h4 class="well__heading">Settings</h4>
+                                    {{>comparisonSettings}}
+                                    {{#if settingsConfirmed}}
+                                        <h4 class="well__heading">Select dashboards</h4>
+                                        {{> applicationDashboardSearchBox }}
+                                        {{#if applicationDashboardSelected}}
+                                            <h4 class="well__heading">Select panels</h4>
+                                            {{#each selectedApplicationDashboards}}
+                                                {{> comparisonPanelSearchBox applicationDashboardId=this baseline=baseline }}
+                                            {{/each}}
+                                            {{# if panelButtonActive}}
+                                                <div class="btn-group__add-member">
+                                                    <div id="select-panels" class="btn btn-primary perfana-label perfana-btn" data-toggle="tooltip" data-placement="top" title="Select panels">
+                                                        Select panels
+                                                    </div>
+                                                </div>
+                                            {{ else }}
+                                                <h4 class="well__heading">Save comparison results</h4>
+                                                <div class="form-group" style="margin-top:10px;">
+                                                    <label for="results-label">Save as</label>
+                                                    <input type="text" class="form-control" id="results-label" placeholder="Results name" value="{{label}}">
+                                                </div>
+                                                <div class="btn-group__add-member">
+                                                    <div id="compare" class="btn btn-primary perfana-label perfana-btn" data-toggle="tooltip" data-placement="top" title="Compare">
+                                                        Compare
+                                                    </div>
+                                                </div>
+                                            {{/if}}
+                                        {{/if}}
+                                    {{/if}}
+                                {{ else }}
+                                    <h4 class="well__heading">Save comparison results</h4>
+                                    <div class="form-group" style="margin-top:10px;">
+                                        <label for="results-label">Save as</label>
+                                        <input type="text" class="form-control" id="results-label" placeholder="Results name" value="{{label}}">
+                                    </div>
+                                    <div class="btn-group__add-member">
+                                        <div id="compare" class="btn btn-primary perfana-label perfana-btn" data-toggle="tooltip" data-placement="top" title="Compare">
+                                            Compare
+                                        </div>
+                                    </div>
+                                {{/if}}
+                            {{/if}}
+                        {{/if}}
+                   </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+<!--                    <button id="reset" type="button" class="btn btn-default" >Reset</button>-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

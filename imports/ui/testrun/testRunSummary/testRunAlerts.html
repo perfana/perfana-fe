@@ -1,0 +1,126 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="alerts">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="perfana-summery-header">Alerts</h5>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th style="width: 10%">Time</th>
+                            <th style="width: 40%">Message</th>
+                            <th style="width: 42.5%">Tags</th>
+                            <th style="width: 2.5%"></th>
+                            <th style="width: 2.5%"></th>
+                            {{#if userHasPermissionForApplication}}
+                                <th style="width: 2.5%"></th>
+                            {{/if}}
+                        </tr>
+                        {{#each testRun.alerts}}
+                            <tr>
+                                <td style="width: 10%">{{formatTimeHelper timestamp}}</td>
+                                <td style="width: 40%">{{message}}</td>
+                                <td style="width: 42.5%">
+                                    {{#each tags}}
+                                        <span class=" break-word label label-default">{{key}}={{value}}</span>
+                                    {{/each}}
+                                </td>
+                                <td style="width: 2.5%">
+                                    {{#if hasUrl this }}
+                                        <i id="alert-modal" url={{url this}} class="fa fa-eye reactive-table-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Quick look"></i>
+                                    {{/if}}
+                                </td>
+                                <td style="width: 2.5%">
+                                    {{#if hasConfigUrl this }}
+                                        <i id="show-alert-config" url={{grafanaConfigUrl this}} class="fa fa-cog reactive-table-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Show alert configuration in Grafana"></i>
+                                    {{/if}}
+                                </td>
+                                {{#if userHasPermissionForApplication}}
+                                    <td style="width: 2.5%">
+                                        <i id="delete-alert" data-alert-index="{{@index}}" class="fa fa-trash reactive-table-icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete alert"></i>
+                                    </td>
+                                {{/if}}
+
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<template name="alertTagsModal">
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Alert details</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="list-group row perfana-row">
+                        <div class="list-group-item col-md-4 perfana-label perfana-testrun-meta-data">Time</div>
+                        <div class="list-group-item col-md-6 perfana-label perfana-testrun-meta-data perfana-label">Message</div>
+                        <div class="list-group-item col-md-1 perfana-label perfana-testrun-meta-data perfana-label">Tags</div>
+                    </div>
+                    {{#each testRun.alerts}}
+                    <div class="list-group row perfana-row">
+                        <div class="list-group-item col-md-4 perfana-testrun-meta-data">{{formatDateHelper timestamp}}</div>
+                        <div class="list-group-item col-md-6 perfana-testrun-meta-data">{{message}}</div>
+                        <div class="list-group-item col-md-1 perfana-testrun-meta-data">
+                            {{#each tags}}
+                            <span class="label label-default">{{value}}</span>
+                            {{/each}}
+                        </div>
+                     </div>
+
+                    {{/each}}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="alertModal">
+    <div class="modal fade">
+        <div class="modal-dialog alert-modal" >
+            <div class="modal-content">
+
+                <div class="modal-body ">
+                    <iframe class="grafana-iframe-benchmarks" src="{{url}}"  frameBorder="0"  width="1000" height="750"></iframe>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

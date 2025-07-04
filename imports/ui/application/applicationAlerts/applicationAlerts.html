@@ -1,0 +1,79 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="applicationAlerts">
+    <div class="perfana-content row">
+        <div class="col-md-11">
+            <div>
+                <div class="panel panel-default perfana-form">
+                    <div class="panel-heading">
+                        <h5 class="perfana-summery-header">Alerts</h5>
+                    </div>
+                    <div class="panel-body">
+                        {{> reactiveTable class="filter-table table" collection=applicationAlerts fields=fields settings=settings}}
+
+                        <!--<div class="list-group row perfana-row">-->
+                            <!--<div class="list-group-item col-md-3 perfana-testrun-meta-data perfana-label">Grafana instance</div>-->
+                            <!--<div class="list-group-item col-md-3 perfana-testrun-meta-data perfana-label">Dashboard name</div>-->
+                            <!--<div class="list-group-item col-md-3 perfana-testrun-meta-data perfana-label">Dashboard label</div>-->
+                            <!--<div class="list-group-item col-md-1 perfana-testrun-meta-data text-center"><i  class="fa fa-pencil" aria-hidden="true"></i></div>-->
+                            <!--<div class="list-group-item col-md-1 perfana-testrun-meta-data text-center"><i id="delete-all-dashboards"  class="fa fa-trash" aria-hidden="true"></i></div>-->
+
+                        <!--</div>-->
+
+                        <!--{{#each grafanaDashboards}}-->
+                                <!--<div class="list-group row perfana-row dashboard-row">-->
+                                    <!--<div class="list-group-item col-md-3 perfana-testrun-meta-data">{{grafana}}</div>-->
+                                    <!--<div class="list-group-item col-md-3 perfana-testrun-meta-data">{{dashboardName}}</div>-->
+                                    <!--<div class="list-group-item col-md-3 perfana-testrun-meta-data">{{dashboardLabel}}</div>-->
+                                    <!--{{#afModalShow formId="editApplicationDashboards" collection="ApplicationDashboards" type="update" doc=this._id}}-->
+                                        <!--<div class="list-group-item col-md-1 perfana-testrun-meta-data text-center"><i id="update-dashboard" class="fa fa-pencil" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="update dashboard"></i></div>-->
+                                    <!--{{/afModalShow}}-->
+                                    <!--<div class="list-group-item col-md-1 perfana-testrun-meta-data text-center" id="delete-dashboard" ><i dashboard-label="{{label}}" grafana="{{grafana}}" class="fa fa-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete dashboard"></i></div>-->
+                                <!--</div>-->
+                        <!--{{/each}}-->
+                        {{#if userIsAllowed}}
+                            {{#if hasGrafanaDashboards}}
+
+                                {{#afModalShow formId="addAlerts" collection="Alerts" type="insert" backdrop="static"  class="btn btn-primary perfana-label add-dashboard  perfana-btn pull-right" title="Add Alert"}}
+                                    Add alert
+                                {{/afModalShow}}
+
+                            {{ else }}
+                                <div type="button" class="btn btn-primary perfana-label grafana-configuration perfana-btn pull-right">Update configuration</div>
+                            {{/if}}
+                        {{/if}}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="noApplicationAlerts">
+    {{#if userIsAllowed}}
+        {{#if hasGrafanaDashboards}}
+            <p>No alerts found, please add one.</p>
+        {{ else }}
+            <p>No linked Grafana dashboards found, please update Grafana configuration</p>
+        {{/if}}
+    {{ else }}
+        <p>You are not allowed to add or edit Grafana dashboards for this application</p>
+    {{/if}}
+</template>
+

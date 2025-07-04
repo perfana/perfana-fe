@@ -1,0 +1,7 @@
+{
+  "name": "@babel/runtime",
+  "version": "^7.15.3",
+  "license": "MIT",
+  "repository": "https://github.com/babel/babel.git",
+  "homepage": "https://babel.dev/docs/en/next/babel-runtime"
+}

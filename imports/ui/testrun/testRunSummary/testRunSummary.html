@@ -1,0 +1,387 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunSummaryTabs">
+
+    <div class="perfana-content">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        {{> perfanaBreadcrumb}}
+                    </p>
+                </div>
+<!--                <div class="col-md-1">-->
+<!--                    <span><i class="fa fa-arrow-left btn {{#unless hasPreviousTestRun}}disabled{{/unless}}" id="previous-test-run" testRunId="{{ previousTestRun }}" data-toggle="tooltip" data-placement="top" title="{{#if hasPreviousTestRun}}Previous test run: {{ previousTestRun }}{{else}}No previous test run found{{/if}}" aria-hidden="true"></i><i class="fa fa-arrow-right btn {{#unless hasNextTestRun}}disabled{{/unless}}" testRunId="{{ nextTestRun}}" id="next-test-run" data-toggle="tooltip" data-placement="top" title="{{#if hasNextTestRun}}Next test run {{ nextTestRun }}{{else}}No next test run found{{/if}}" aria-hidden="true"></i></span>-->
+<!--                </div>-->
+
+            </div>
+            {{#if testRunExpired }}
+                <div class="alert alert-warning">
+                    <p>This test run has expired, the Grafana snapshots are no longer available.</p>
+                </div>
+            {{ else }}
+                {{#if testRunInvalid}}
+                    <div class="alert alert-danger">
+                        <strong>Invalid</strong>
+                        <p>This test run has been marked as invalid, due to: <br> {{ reasonsNotValid }} </p>
+                        <div class="text-right">
+                            <div type="button" class="btn btn-primary perfana-label perfana-btn re-evaluate-benchmarks">Re-evaluate checks  <i id="invalid-button-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="Click to re-evaluate the checks"></i></div>
+                            <div type="button" class="btn btn-primary perfana-label perfana-btn refresh-data" >Re-fresh data  <i id="invalid-button-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="Click to re-fetch all the data from Grafana and re-evaluate the checks"></i></div>
+                            <div type="button" class="btn btn-primary perfana-label mark-as-valid perfana-btn ">Mark as valid</div>
+                            <div type="button" class="btn btn-danger delete-test-run perfana-btn delete-button">Delete test run</div>
+                        </div>
+                    </div>
+                {{/if}}
+            {{/if}}
+             <div role="tabpanel" class="tab-pane" id="configuration">
+                <ul class="nav nav-tabs test-run-summary" role="tablist">
+                        <li role="presentation" class="active" ><a href="#summary" role="tab" data-toggle="tab">Summary</a></li>
+                        {{#if perfanaChatUrlConfigured}}
+                            <li role="presentation"><a href="#ai" role="tab" data-toggle="tab">AI Assistant</a></li>
+                        {{/if}}
+                        {{#if showDataScienceCompare}}
+                            <li role="presentation"><a href="#adapt" role="tab" data-toggle="tab">ADAPT</a></li>
+                        {{/if}}
+                        <li role="presentation"><a href="#comments" role="tab" data-toggle="tab">Comments {{#if hasUnreadComments}}<span class="badge badge-danger">{{unreadCommentsCount}}</span>{{/if}}</a></li>
+                        {{#if hasKeyMetrics}}
+                            {{#unless testRunExpired}}
+                                <li role="presentation"><a href="#service-level-indicators" role="tab" data-toggle="tab">Service Level Indicators</a></li>
+                            {{/unless}}
+                        {{/if}}
+                        {{#unless testRunExpired}}
+                            <li role="presentation"><a href="#dashboards" role="tab" data-toggle="tab">Dashboards</a></li>
+                        {{/unless}}
+                        {{#if hasConfiguration}}
+                            <li role="presentation"><a href="#config" role="tab" data-toggle="tab">Configuration</a></li>
+                        {{/if}}
+                        {{#if userHasPermissionForApplication}}
+                            {{#if hasReportingTemplate}}
+                                <li role="presentation"><a href="#report" role="tab" data-toggle="tab">Report</a></li>
+                            {{/if}}
+                        {{ else }}
+                            {{#if hasReport}}
+                                <li role="presentation"><a href="#report" role="tab" data-toggle="tab">Report</a></li>
+                            {{/if}}
+                        {{/if}}
+                        {{#if multipleTestRuns}}
+                            {{#unless testRunExpired}}
+                                  <li role="presentation"><a href="#compare" role="tab" data-toggle="tab">Compare</a></li>
+                            {{/unless}}
+                        {{/if}}
+                        {{#if tracingService}}
+                           <li role="presentation"><a href="#traces" role="tab" data-toggle="tab">Traces</a></li>
+                        {{/if}}
+                        {{#if pyroScopeConfigured}}
+                           <li role="presentation"><a href="#pyroscope" role="tab" data-toggle="tab">Pyroscope</a></li>
+                        {{/if}}
+                        {{#if dynatraceInLicense}}
+                            {{#if dynatraceConfigured}}
+                               <li role="presentation"><a href="#dynatrace" role="tab" data-toggle="tab">Dynatrace</a></li>
+                            {{/if}}
+                        {{/if}}
+                        {{#if userHasPermissionForApplication}}
+                            <li role="presentation"><a href="#manage" role="tab" data-toggle="tab">Manage</a></li>
+                        {{/if}}
+                </ul>
+                <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="summary">
+                        {{#if tabActive '#summary' }}
+                            {{> testRunSummary}}
+                        {{/if}}
+                        </div> 
+                        <div role="tabpanel" class="tab-pane active" id="ai">
+                        {{#if tabActive '#ai' }}
+                            {{> testRunAI}}
+                        {{/if}}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="adapt">
+                        {{#if tabActive '#adapt' }}
+                            {{#unless adaptAvailable}}
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading panel-heading-with-filter">
+                                        <h4>Automated Deviation Analysis for Performance Testing <span class="label label-default beta">BETA</span></h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p>No ADAPT results available for this test run</p>
+                                    </div>
+                                </div>
+                                </div>
+                            {{ else }}
+                                {{> adapt testRun=testRun}}
+                            {{/unless}}
+                        {{/if}}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="comments">
+                            {{#if tabActive '#comments' }}
+                                {{> testRunComments testRun=testRun}}
+                            {{/if}}
+                       </div>
+                       <div role="tabpanel" class="tab-pane" id="service-level-indicators">
+                            {{#if tabActive '#service-level-indicators' }}
+                                {{> testRunKeyMetrics runningTest=false}}
+                            {{/if}}
+                       </div>
+                       <div role="tabpanel" class="tab-pane" id="dashboards">
+                            {{#if tabActive '#dashboards' }}
+                                {{> testRunDashboards testRun=testRun}}
+                            {{/if}}
+                       </div>
+                       <div role="tabpanel" class="tab-pane" id="config">
+                            {{#if tabActive '#config' }}
+                                {{> testRunConfig testRun=testRun}}
+                            {{/if}}
+                       </div>
+                        {{#if hasReportingTemplate}}
+                            <div role="tabpanel" class="tab-pane" id="report">
+                            {{#if tabActive '#report' }}
+                                {{> testRunReport testRun=testRun}}
+                            {{/if}}
+                           </div>
+                        {{/if}}
+                       <div>
+                        {{#if tabActive '#manage' }}
+                            <div role="tabpanel" class="tab-pane" id="manage">
+                                {{> manageTestRunPage testRun=testRun}}
+                            </div>
+                        {{/if}}
+                        </div>
+                       <div>
+                        {{#if tabActive '#compare' }}
+                            <div role="tabpanel" class="tab-pane" id="compare">
+                                {{> compareResults testRun=testRun}}
+                            </div>
+                        {{/if}}
+                        </div>
+                        <div>
+                        {{#if tabActive '#traces' }}
+                            <div role="tabpanel" class="tab-pane" id="traces">
+                                {{> testRunTraces testRun=testRun}}
+                            </div>
+                        {{/if}}
+                        {{#if tabActive '#pyroscope' }}
+                            <div role="tabpanel" class="tab-pane" id="pyroscope">
+                                {{> testRunPyroscope testRun=testRun}}
+                            </div>
+                        {{/if}}
+                        {{#if tabActive '#dynatrace' }}
+                            {{#if dynatraceInLicense}}
+                                <div role="tabpanel" class="tab-pane" id="dynatrace">
+                                    {{> testRunDynatraces testRun=testRun}}
+                                </div>
+                            {{/if}}
+                        {{/if}}
+                        </div>
+                  </div>
+             </div>
+        </div>
+    </div>
+</template>
+
+<template name="testRunSummary">
+
+    <div class="row">
+        <div class="col-md-6">
+            {{> testRunMetadata testRun=testRun}}
+            {{#if testRunHasAlerts }}
+                {{>alerts testRun=testRun}}
+            {{/if}}
+            {{#if testRunHasEvents }}
+                {{>testRunEvents testRun=testRun}}
+            {{/if}}
+            {{#if testRunHasLinks }}
+                {{>testRunLinks testRun=testRun}}
+            {{/if}}
+
+
+        </div>
+        <div class="col-md-6">
+            {{> testRunCheckResults testRun=testRun}}
+            {{#if autocompareTestRuns}}
+                {{#if showLegacyCompare}}
+                    {{#if isNotBaselineTestRun}}
+                        {{#if hasPreviousTestRun}}
+                            {{> testRunCompareResultsPreviousTestRun testRun=testRun}}
+                        {{/if}}
+                        {{#if hasBaselineTestRun}}
+                            {{> testRunCompareResultsBaselineTestRun testRun=testRun}}
+                        {{/if}}
+                    {{/if}}
+                {{/if}}
+            {{/if}}
+            {{#if adaptEnabled}}
+                {{> adaptTLDR testRun=testRun}}
+            {{/if}}
+
+        </div>
+
+    </div>
+
+</template>
+
+<template name="adaptTLDR">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Automated Deviation Analysis for Performance Testing <span class="label label-default beta">BETA</span></h3>
+        </div>
+        <div class="panel-body">
+            {{#if adaptReady}}
+                {{#if adaptInvalid }}
+                    <div class="alert alert-warning">
+                        <strong>Not available</strong>
+                        <p>ADAPT analysis did not run</p>
+                        <p>Please open the <span class="go-to-adapt-tab mixin-link">ADAPT tab </span> for details</p>
+                    </div>
+                {{ else }}
+                    {{#if regressionDetected}}
+                        {{#if regressionDetectedTestRun}}
+                            <div class="alert alert-danger">
+                                {{#if regressionsAccepted}}
+                                    <div class="pull-right">
+                                        <span class="break-word label label-success" style="font-size: 14px;">Accepted as variability</span>
+                                    </div>
+                                {{ else }}
+                                    {{#if regressionsConfirmed}}
+                                        <div class="pull-right">
+                                            <span class="break-word label label-danger" style="font-size: 14px;">Confirmed as regression</span>
+                                        </div>
+                                    {{ else }}
+                                        {{#if testRunAddedToBaseline}}
+                                            <div class="pull-right">
+                                                <span id="regression-info" class="break-word label label-warning pointer" style="font-size: 14px;">User feedback required <i  id="regression-info" class="fa fa-info-circle reactive-table-icon" data-tippy-content="ADAPT detected regression but based on the SLO results this test run will be added to the control group used as baseline. Confirm regression or mark detected differences as variability"></i></span>
+                                            </div>
+                                        {{/if}}
+                                    {{/if}}
+                                {{/if}}
+                                <strong>Regression detected</strong>
+                                <p>ADAPT has detected regression in this test run</p>
+                                <p>Please open the <span class="go-to-adapt-tab mixin-link">ADAPT tab </span> for details</p>
+
+                            </div>
+                        {{else}}
+                            <div class="alert alert-success">
+                                <strong>No regression detected</strong>
+                                <p>ADAPT has not detected any regression in this test run</p>
+                                <p>Please open the <span class="go-to-adapt-tab mixin-link">ADAPT tab </span> for details</p>
+                            </div>
+                        {{/if}}
+                        {{#if trackedRegressionDetected}}
+                            <div class="alert alert-danger">
+                                <strong>Unresolved regression</strong>
+                                <p>There is unresolved regression from earlier test runs</p>
+                                <p>Please open the <span class="go-to-unresolved-regression mixin-link">Unresolved regression overview </span> for details</p>
+                            </div>
+                        {{/if}}
+                        {{#if perfanaChatUrlConfigured}}
+                            {{#if regressionDetectedTestRun}}
+                                <div class="well" style="position: relative;">
+                                    <iframe src="{{perfanaChatUrl}}" style="width:100%; min-height:400px; border:none;"></iframe>
+                                </div>
+                            {{/if}}
+                        {{/if}}
+                    {{else}}
+                    <div class="alert alert-success">
+                        <strong>No regression detected</strong>
+                        <p>ADAPT has not detected any regression in this test run</p>
+                        <p>Please open the <span class="go-to-adapt-tab mixin-link">ADAPT tab </span> for details</p>
+                    </div>
+
+                {{/if}}
+                
+<!--                {{#if testRunAddedToBaseline}}-->
+<!--                    <div class="alert alert-success">-->
+<!--                        <strong>Manage control group</strong>-->
+
+<!--                        <p>Based on the SLO results this test run will be added to the control group</p>-->
+<!--                        <div class="text-right">-->
+<!--                            <div type="button" class="btn btn-primary perfana-label perfana-btn" id="exclude-test-run-from-baseline">Exclude from control group</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                {{/if}}-->
+            {{/if}}
+
+            {{else}}
+                <p>ADAPT analysis is still in progress ... </p>
+            {{/if}}
+        </div>
+    </div>
+</template>
+
+<template name="testRunAI">
+    <div class="col-md-12" style="height: 100vh; padding: 0;">
+        <div class="well" style="position: relative; height: 100vh; margin-bottom: 0; contain: layout style;">
+            <iframe src="{{perfanaChatUrl}}" 
+                    style="width:100%; min-height:100vh; height:100vh; border:none; contain: layout;" 
+                    scrolling="no" 
+                    tabindex="-1"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation"
+                    onload="this.blur(); window.focus();"></iframe>
+        </div>
+    </div>
+</template>
+
+<template name="adapt">
+    <div class="col-md-12">
+        {{> testRunDataScienceCompareResults testRun=testRun}}
+    </div>
+</template>
+
+<template name="manageTestRunPage">
+    <div class="row">
+        <div class="col-md-4">
+            {{>manageTestRun testRun=testRun}}
+        </div>
+        <div class="col-md-4">
+            {{#if applicationHasGrafanaDashboards }}
+<!--                {{#if testRunHasSnapshots}}-->
+                {{> benchmarks testRun=testRun testRunHasBenchmarks=testRunHasBenchmarks}}
+<!--                {{/if}}-->
+            {{/if}}
+        </div>
+        <div class="col-md-4">
+            {{#if testRunHasReport}}
+                {{>manageTestRunReport testRun=testRun}}
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            {{>testRunStatus testRun=testRun}}
+        </div>
+        {{#unless testRunExpired}}
+            <div class="col-md-8">
+                {{#if applicationHasGrafanaDashboards }}
+                    {{>grafanaSnapshots testRun=testRun testRunHasSnapshots=testRunHasSnapshots }}
+                {{/if}}
+            </div>
+        {{/unless}}
+
+    </div>
+    {{#if isAdmin}}
+        <div>
+            <div class="col-md-4">
+                {{>debugTestRun}}
+            </div>
+        </div>
+    {{/if}}
+</template>
+
+
+
+

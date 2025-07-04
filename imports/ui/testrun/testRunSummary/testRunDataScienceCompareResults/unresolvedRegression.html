@@ -1,0 +1,57 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="unresolvedRegressionOverview">
+<!--    <div class="form-check">-->
+<!--        <input class="form-check-input" type="checkbox" checked="{{showControlGroupRunsOnly}}" id="showControlGroupRunsOnly">-->
+<!--        <label class="form-check-label" for="showControlGroupRunsOnly">Show runs used in control group only</label>-->
+<!--    </div>-->
+    {{> reactiveTable class="table" collection=unresolvedRegression fields=fields settings=settings rowClass=rowClass selectedTestRun=selectedTestRun }}
+    <div class="metric-details col-md-12">
+        <div id="graphs-per-row" class="text-center btn-group" role="group">
+            <button type="button" class="btn btn-default dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                metrics / row
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li class="graphs-row-li" id="row-1">1</li>
+                <li class="graphs-row-li" id="row-2">2</li>
+                <li class="graphs-row-li" id="row-3">3</li>
+                <li class="graphs-row-li" id="row-4">4</li>
+
+            </ul>
+        </div>
+        <div>
+            {{#each unresolvedRegressionsForTestRunChunks}}
+                {{> unresolvedRegressionRow }}
+            {{/each}}
+        </div>
+    </div>
+</template>
+
+<!--<template name="visualizeUnresolvedRegression">-->
+<!--    <p>FOOBAR</p>-->
+<!--    <div class="ds-visualize-unresolved-regression-graph" id="{{divId}}"></div>-->
+<!--</template>-->
+
+
+<template name="unresolvedRegressionRow">
+    {{#each row}}
+        <div class="key-metrics__panel panel panel-default {{ columnClass }}">
+            {{> visualizeTrackedDifferences showTitle=true dashboardLabel=dashboardLabel metricName=metricName applicationDashboardId=applicationDashboardId panelId=panelId panelTitle=panelTitle testRunId=testRunId showThresholdsLegend=false clickTestRunToOpenTestRun=true}}
+        </div>
+    {{/each}}
+</template>

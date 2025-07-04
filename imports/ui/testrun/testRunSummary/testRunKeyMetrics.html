@@ -1,0 +1,67 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunKeyMetrics">
+    <div id="graphs-per-row" class="text-center btn-group" role="group">
+        <button type="button" class="btn btn-default dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            graphs / row
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li class="graphs-row-li" id="row-1">1</li>
+            <li class="graphs-row-li" id="row-2">2</li>
+            <li class="graphs-row-li" id="row-3">3</li>
+            <li class="graphs-row-li" id="row-4">4</li>
+        </ul>
+    </div>
+    <div class="key-metrics-rows">
+        {{#each keyMetrics }}
+            {{> keyMetricsRow }}
+        {{/each }}
+    </div>
+</template>
+
+<template name="keyMetricsRow">
+  {{#each row}}
+     <div class="key-metrics__panel panel panel-default {{ columnClass }}">
+        <div class="panel-heading">
+            <div class="perfana-key-metric-header text-center h5">{{ this.dashboardLabel}}
+                {{#unless runningTest}}
+                    <i id="open-comment-box" style="margin-right:10px;" class="fa fa-comment  pull-right" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Comment on this metric"></i>
+                {{/unless}}
+            </div>
+        </div>
+
+        <div class="panel-body" >
+            {{#if runningTest}}
+                <iframe class="grafana-iframe" src="{{ themeUrl runningTestPanelImageUrl }}" frameBorder="0" width="100%" height="500"></iframe>
+            {{else}}
+                {{#if showSnapshots}}
+                    {{#if hasSnapShotUrl}}
+                        <iframe class="grafana-iframe" src="{{ themeUrl snapShotUrl }}"  frameBorder="0"  width="100%" height="500"></iframe>
+                    {{ else }}
+                        <div style="width: 100%;  height: 500px;">
+                            <p class="test-run-expired">Graph not available, check Grafana snapshots in Manage tab</p>
+                        </div>
+                    {{/ if }}
+                {{ else }}
+                    <iframe class="grafana-iframe" src="{{ themeUrl panelImageUrl }}" frameBorder="0" width="100%" height="500"></iframe>
+                {{/if}}
+            {{/if}}
+        </div>
+     </div>
+  {{/each}}
+</template>

@@ -1,0 +1,97 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="testRunReportInformation">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="perfana-summery-header">Test run information</h5>
+                <!--<div type="button" class="btn btn-primary perfana-label delete-test-run perfana-btn col-md-3">Delete test run</div>-->
+            </div>
+            <div class="panel-body">
+                <table class="table test-run-information__table">
+                    <tbody>
+                    <tr>
+                      <th>System under test</th>
+                      <td>{{testRun.application}}</td>
+                    </tr>
+                    <tr>
+                      <th>Release</th>
+                      <td>{{testRun.applicationRelease}}</td>
+                    </tr>
+                    <tr>
+                      <th>Workload</th>
+                      <td>{{testRun.testType}}</td>
+                    </tr>
+                    <tr>
+                      <th>Environment</th>
+                      <td>{{testRun.testEnvironment}}</td>
+                    </tr>
+                    <tr>
+                      <th>ID</th>
+                        <td class="link"><div class="test-run-url">{{testRun.testRunId}}</div></td>
+                    </tr>
+                    <tr>
+                      <th>Start</th>
+                      <td>{{formatDateHelper testRun.start}}</td>
+                    </tr>
+                    <tr>
+                      <th>End</th>
+                      <td>{{formatDateHelper testRun.end}}</td>
+                    </tr>
+                    <tr>
+                      <th>Duration</th>
+                      <td>{{humanReadableDurationHelper testRun.duration}}</td>
+                    </tr>
+                    <tr>
+                      <th>Ramp up time</th>
+                      <td>{{humanReadableDurationHelper testRun.rampUp}}</td>
+                    </tr>
+                    <tr>
+                      <th>Completed</th>
+                      <td>{{completedHTML testRun.completed}}</td>
+                    </tr>
+                    {{#if testRunHasCIBuildResultsUrl}}
+                        <tr>
+                            <th class="col-md-3">CI build result</th>
+                            <td class="link"><div class="ci-build-result-url">{{testRun.CIBuildResultsUrl}}</div></td>
+                        </tr>
+                    {{/if}}
+                    {{#if testRunHasTags}}
+                        <tr>
+                            <th class="col-md-3">Tags</th>
+                            <td>
+                                {{#each testRun.tags}}
+                                    <span class=" break-word label label-default">{{this}}</span>
+                                {{/each}}
+                            </td>
+                        </tr>
+                    {{/if}}
+                    {{#if testRunHasAnnotations}}
+                    <tr>
+                      <th>Annotations</th>
+                      <td>
+<!--                          <span class="{{#if userHasPermissionForApplication}}show-pointer{{/if}}" id="edit-annotations" data-toggle="tooltip" data-placement="top" title="{{#if userHasPermissionForApplication}}Click to edit{{else}}Log in with authorised user to edit{{/if}}">{{testRun.annotations}}</span>-->
+                          {{testRun.annotations}}
+                      </td>
+                    </tr>
+                    {{/if}}
+                    </tbody>
+                </table>                
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,85 @@
+# Copyright 2025 Perfana Contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# This is a basic workflow that is manually triggered
+
+name: Test perfana-fe
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+
+jobs:
+  build_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code from code branch
+        uses: actions/checkout@v4
+        with:
+          path: main
+          fetch-depth: 0
+      - name: Compress  test files for transfer
+        working-directory: main
+        run: |
+          pwd
+          tar -zcf perfana-tests.tgz tests
+          ls -all
+      - name: Scp tar file to remote server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: "/home/runner/work/perfana-fe/perfana-fe/main/perfana-tests.tgz"
+          target: "/home/deploy/"
+      - name: Run tests on remote server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd /home/deploy
+            tar -zxf /home/deploy/github/workspace/main/perfana-tests.tgz
+            cd tests
+            docker run --net=perfana-test-env_perfana -v $PWD:/tests perfana/codeceptjs:latest -c test.conf.js
+            tar -zcf tests-output.tgz output
+            ls -all
+            pwd
+      - name: Scp test output from remote server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: "/home/deploy/tests/tests-output.tgz"
+          target: "/home/runner/work/perfana-fe/perfana-fe/main/"
+      - name: Unpack test output
+        working-directory: main
+        run: |
+          tar -zxf tests-output.tgz
+          ls -all
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-output
+          path: /home/runner/work/perfana-fe/perfana-fe/main/output # or path/to/artifact

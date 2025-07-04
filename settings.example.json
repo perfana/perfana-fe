@@ -1,0 +1,53 @@
+{
+  "organisations": [
+    {
+      "name": "MyOrg",
+      "description": "My Organisation"
+    }
+  ],
+  "adminUser": "admin@perfana.io",
+  "adminPassword": "admin",
+  "perfanaApiUser": "perfana-webhook-user",
+  "perfanaApiPassword": "perfana-webhook-password",
+  "perfanaApiContextRoot": "/perfana",
+  "lokiRetention": "2592000",
+  "prometheusRetention": "2592000",
+  "influxDbRetention": "2592000",
+  "elasticSearchRetention": "2592000",
+  "snapshotExpires": "7776000",
+  "provisionGoldenPathProfiles": true,
+  "dsApiUrl": "http://localhost:8080",
+  "perfanaUrl": "http://localhost:4000",
+  "helmet": {
+    "frameSrc": [
+      "http://localhost:3000",
+      "http://localhost:3001",
+  },
+  "grafanaInstances": [
+    {
+    "label": "Default",
+    "clientUrl": "http://localhost:3000",
+    "serverUrl": "http://grafana:3000",
+    "orgId": "1",
+    "snapshotInstance": true,
+    "trendsInstance": true,
+    "username": "perfana",
+    "password": "perfana"
+    }
+  ],
+  "public": {
+    "perfanaUrl": "http://localhost:4000",
+    "perfanaChatUrl": "http://localhost:3001",
+    "tracingUrl": "http://localhost:3000/d/tempo-traces/tempo-traces",
+    "tracingLimit": 500,
+    "tracingUi": "tempo",
+    "traceRequestNamePanelDescription": "perfana-request-names",
+    "tracingIframeAllowed": true,
+    "pyroscopeUrl": "http://localhost:3000/a/grafana-pyroscope-app/explore",
+    "pyroscopeStandAlone": false,
+    "forbidClientAccountCreation": true,
+    "showUsernamePasswordLogin": true
+  },
+  "loginExpirationInDays": 1,
+  "testRunsSubscriptionLimit": 100,
+}

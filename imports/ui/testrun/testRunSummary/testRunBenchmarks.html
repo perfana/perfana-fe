@@ -1,0 +1,50 @@
+<!--
+ Copyright 2025 Perfana Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<template name="benchmarks">
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="perfana-summery-header">Manage automated analysis</h5>
+            </div>
+            <div class="panel-body">
+                {{#if testRunHasBenchmarkConfigurationOrAdapt}}
+                <div class="btn-wrapper">
+                    {{#if userHasPermissionForApplication}}
+                        <div type="button" class="pull-right btn btn-link perfana-label open-kpi-tab perfana-btn">Service Level Indicators configuration</div>
+                        {{#unless testRunExpired}}
+                            {{#if anaylsisIsRunning}}
+                                <div><p>Analysis is running, check test run status for more details</p></div>
+                            {{else}}
+                                <div type="button" class="btn btn-primary perfana-label re-evaluate-benchmarks perfana-btn">Re-evaluate</div>
+                                <div type="button" class="btn btn-primary perfana-label refresh-data perfana-btn">Refresh</div>
+                            {{/if}}
+                        {{/unless}}
+                    {{/if}}
+                </div>
+                {{else}}
+                    {{#unless runAdapt}}
+                        <div class="status-analysis-running"><p>ADAPT is not enabled, click <a id="enable-adapt">here</a> to enable it</p></div>
+                    {{/unless}}
+                    {{#unless testRunHasBenchmarkConfiguration}}
+                        <div class="status-analysis-running"><p>No Service Level Indicators have been configured yet, click <a class="add-kpi">here</a> to add a Service Level Indicator</p></div>
+                    {{/unless}}
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</template>
+

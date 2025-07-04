@@ -1,0 +1,7 @@
+{
+  "name": "moment-timezone",
+  "version": "^0.5.43",
+  "license": "MIT",
+  "repository": "git+https://github.com/moment/moment-timezone.git",
+  "homepage": "http://momentjs.com/timezone/"
+}
