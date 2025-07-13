@@ -33,7 +33,7 @@
     "lodash": "^4.17.21",
     "marked": "^15.0.8",
     "md5": "^2.3.0",
-    "meteor-node-stubs": "^1.1.0",
+    "meteor-node-stubs": "^1.2.15",
     "moment": "^2.29.2",
     "moment-timezone": "^0.5.43",
     "mongodb": "^3.6.9",
