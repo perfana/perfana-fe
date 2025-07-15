@@ -24,6 +24,7 @@ import { TestRunConfigs } from '/imports/collections/testrunConfigs';
 import { createMetricClassifications } from './createMetricClassifications';
 import _ from 'lodash';
 import { perfanaDsApiPost } from '/imports/helpers/perfana-ds-api';
+import { DsChangepoints } from '/imports/collections/dsChangePoints';
 
 export const updateRunningTest = function (req, res) {
   const snapshotExpires =
@@ -93,47 +94,21 @@ export const updateRunningTest = function (req, res) {
         description: req.body.systemUnderTest,
         testEnvironments: testEnvironments,
       });
+      // set dsChangepoint if  adapt is enabled and  autoSetBaselineTestRun === true
+      if (
+        (Meteor.settings.enableAdapt ?? true) === true &&
+        (Meteor.settings.runAdapt ?? true) === true &&
+        (Meteor.settings.autoSetBaselineTestRun ?? true) === true
+      ) {
+        // insert dsChangepoint
+        DsChangepoints.insert({
+          application: req.body.systemUnderTest,
+          testEnvironment: req.body.testEnvironment,
+          testType: req.body.workload,
+          testRunId: req.body.testRunId,
+        });
+      }
     } else {
-      // set autoCompareTestRuns if not present (backwards compatibility)
-      application.testEnvironments.forEach(
-        (testEnvironment, testEnvironmentIndex) => {
-          testEnvironment.testTypes.forEach((testType, testTypeIndex) => {
-            if (testType.autoCreateSnapshots === undefined)
-              application.testEnvironments[testEnvironmentIndex].testTypes[
-                testTypeIndex
-              ].autoCreateSnapshots =
-                Meteor.settings.autoCreateSnapshots ?
-                  Meteor.settings.autoCreateSnapshots === true
-                : false;
-            if (testType.autoCompareTestRuns === undefined)
-              application.testEnvironments[testEnvironmentIndex].testTypes[
-                testTypeIndex
-              ].autoCompareTestRuns =
-                Meteor.settings.autoCompareTestRuns ?
-                  Meteor.settings.autoCompareTestRuns === true
-                : false;
-            if (testType.enableAdapt === undefined)
-              application.testEnvironments[testEnvironmentIndex].testTypes[
-                testTypeIndex
-              ].enableAdapt =
-                Meteor.settings.enableAdapt ?
-                  Meteor.settings.enableAdapt === true
-                : true;
-            if (testType.runAdapt === undefined)
-              application.testEnvironments[testEnvironmentIndex].testTypes[
-                testTypeIndex
-              ].runAdapt =
-                Meteor.settings.runAdapt ?
-                  Meteor.settings.runAdapt === true
-                : true;
-            if (testType.adaptMode === undefined)
-              application.testEnvironments[testEnvironmentIndex].testTypes[
-                testTypeIndex
-              ].adaptMode = 'DEFAULT';
-          });
-        },
-      );
-
       const tstEnvIndex = application.testEnvironments
         .map(function (testEnv) {
           return testEnv.name;
@@ -183,6 +158,21 @@ export const updateRunningTest = function (req, res) {
             },
           },
         );
+
+        // set dsChangepoint if  adapt is enabled and  autoSetBaselineTestRun === true
+        if (
+          (Meteor.settings.enableAdapt ?? true) === true &&
+          (Meteor.settings.runAdapt ?? true) === true &&
+          (Meteor.settings.autoSetBaselineTestRun ?? true) === true
+        ) {
+          // insert dsChangepoint
+          DsChangepoints.insert({
+            application: req.body.systemUnderTest,
+            testEnvironment: req.body.testEnvironment,
+            testType: req.body.workload,
+            testRunId: req.body.testRunId,
+          });
+        }
       } else {
         const testTypeIndex = application.testEnvironments[
           tstEnvIndex
@@ -227,6 +217,21 @@ export const updateRunningTest = function (req, res) {
               },
             },
           );
+
+          // set dsChangepoint if  adapt is enabled and  autoSetBaselineTestRun === true
+          if (
+            (Meteor.settings.enableAdapt ?? true) === true &&
+            (Meteor.settings.runAdapt ?? true) === true &&
+            (Meteor.settings.autoSetBaselineTestRun ?? true) === true
+          ) {
+            // insert dsChangepoint
+            DsChangepoints.insert({
+              application: req.body.systemUnderTest,
+              testEnvironment: req.body.testEnvironment,
+              testType: req.body.workload,
+              testRunId: req.body.testRunId,
+            });
+          }
         } else {
           if (
             req.body.tags &&
@@ -449,16 +454,19 @@ export const updateRunningTest = function (req, res) {
 
       /* If the test run is completed, update metric classifications */
       if (updatedTestRun.completed === true) {
-
         const analyzeTestEndpoint = `/data/analyzeTest/${updatedTestRun.testRunId}?adapt=true`;
         perfanaDsApiPost(analyzeTestEndpoint, {})
           .then((response) => {
-            log.info(`Successfully analyzed test run ${updatedTestRun.testRunId}: ${response}`);
+            log.info(
+              `Successfully analyzed test run ${updatedTestRun.testRunId}: ${response}`,
+            );
           })
           .catch((error) => {
-            log.error(`Failed to analyze test run ${updatedTestRun.testRunId}: ${error}`);
+            log.error(
+              `Failed to analyze test run ${updatedTestRun.testRunId}: ${error}`,
+            );
           });
-          
+
         createMetricClassifications(updatedTestRun);
 
         const autoCreateSnapshots =
