@@ -164,7 +164,7 @@ export const createPlotlyGraphTrackedDifferences = (
   let graphUnit =
     dsAdaptResults[0].panelYAxesFormat ?
       dsAdaptResults[0].panelYAxesFormat
-      : '';
+    : '';
   const pointLabels = [];
   const selectedTestRunPointLabels = [];
   const controlGroupPointLabels = [];
@@ -239,39 +239,41 @@ export const createPlotlyGraphTrackedDifferences = (
         }
       }
 
-      if (
-        maxDataPointThresholdUpper === undefined ||
-        dsAdaptResult.thresholds.upper.overall > maxDataPointThresholdUpper
-      ) {
-        maxDataPointThresholdUpper = dsAdaptResult.thresholds.upper.overall;
-      }
-      if (
-        minDataPointThresholdUpper === undefined ||
-        dsAdaptResult.thresholds.upper.overall < minDataPointThresholdUpper
-      ) {
-        minDataPointThresholdUpper = dsAdaptResult.thresholds.upper.overall;
-      }
+      if (dsAdaptResult.thresholds) {
+        if (
+          maxDataPointThresholdUpper === undefined ||
+          dsAdaptResult.thresholds.upper.overall > maxDataPointThresholdUpper
+        ) {
+          maxDataPointThresholdUpper = dsAdaptResult.thresholds.upper.overall;
+        }
+        if (
+          minDataPointThresholdUpper === undefined ||
+          dsAdaptResult.thresholds.upper.overall < minDataPointThresholdUpper
+        ) {
+          minDataPointThresholdUpper = dsAdaptResult.thresholds.upper.overall;
+        }
 
-      // thresholdUpperX.push(dsAdaptResult.testRunStart);
-      thresholdUpperX.push(testRunIndex);
-      thresholdUpperY.push(dsAdaptResult.thresholds.upper.overall);
+        // thresholdUpperX.push(dsAdaptResult.testRunStart);
+        thresholdUpperX.push(testRunIndex);
+        thresholdUpperY.push(dsAdaptResult.thresholds.upper.overall);
 
-      if (
-        maxDataPointThresholdLower === undefined ||
-        dsAdaptResult.thresholds.lower.overall > maxDataPointThresholdLower
-      ) {
-        maxDataPointThresholdLower = dsAdaptResult.thresholds.lower.overall;
-      }
-      if (
-        minDataPointThresholdLower === undefined ||
-        dsAdaptResult.thresholds.lower.overall < minDataPointThresholdLower
-      ) {
-        minDataPointThresholdLower = dsAdaptResult.thresholds.lower.overall;
-      }
+        if (
+          maxDataPointThresholdLower === undefined ||
+          dsAdaptResult.thresholds.lower.overall > maxDataPointThresholdLower
+        ) {
+          maxDataPointThresholdLower = dsAdaptResult.thresholds.lower.overall;
+        }
+        if (
+          minDataPointThresholdLower === undefined ||
+          dsAdaptResult.thresholds.lower.overall < minDataPointThresholdLower
+        ) {
+          minDataPointThresholdLower = dsAdaptResult.thresholds.lower.overall;
+        }
 
-      // thresholdLowerX.push(dsAdaptResult.testRunStart);
-      thresholdLowerX.push(testRunIndex);
-      thresholdLowerY.push(dsAdaptResult.thresholds.lower.overall);
+        // thresholdLowerX.push(dsAdaptResult.testRunStart);
+        thresholdLowerX.push(testRunIndex);
+        thresholdLowerY.push(dsAdaptResult.thresholds.lower.overall);
+      }
     });
 
   // If unit is 'percentunit' convert to percentage
@@ -364,8 +366,8 @@ export const createPlotlyGraphTrackedDifferences = (
       yaxis: {
         title:
           graphUnit === 'short' ? ''
-            : graphUnit === 'percentunit' ? '%'
-              : graphUnit,
+          : graphUnit === 'percentunit' ? '%'
+          : graphUnit,
       },
       hovermode: false,
     };
@@ -494,8 +496,8 @@ export const createPlotlyGraphTrackedDifferences = (
         rangemode: 'tozero',
         title:
           graphUnit === 'short' ? ''
-            : graphUnit === 'percentunit' ? '%'
-              : graphUnit,
+          : graphUnit === 'percentunit' ? '%'
+          : graphUnit,
         // showgrid: true, // grid lines are shown
         showline: true, // zero line is shown
         // gridcolor: gridcolor
@@ -510,8 +512,8 @@ export const createPlotlyGraphTrackedDifferences = (
           thresholdUpperX.length === 0
         ) ?
           'No data available'
-          : showTitle ? `${dashboardLabel}<br>${panelTitle}<br>${metricName}`
-            : '',
+        : showTitle ? `${dashboardLabel}<br>${panelTitle}<br>${metricName}`
+        : '',
       hovermode: 'x',
     };
 
