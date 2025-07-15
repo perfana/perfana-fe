@@ -551,8 +551,9 @@ const getMetricGenericChecksYamlFn = (id, callback) => {
             title: panel.title,
             id: panel.id,
             type: panel.type,
-            yAxesFormat: panel.fieldConfig.defaults.unit
-              ? panel.fieldConfig.defaults.unit
+            yAxesFormat:
+              panel.fieldConfig.defaults.unit ?
+                panel.fieldConfig.defaults.unit
               : undefined,
             evaluateType: 'avg',
             requirement: {
@@ -1200,13 +1201,13 @@ const updateMetricClassificationFn = (
         dashboardUid: metricClassification.dashboardUid,
         applicationDashboardId: metricClassification.applicationDashboardId,
         panelId: {
-          $eq: metricClassification.panelId
-            ? metricClassification.panelId
-            : null,
+          $eq:
+            metricClassification.panelId ? metricClassification.panelId : null,
         },
         metricName: {
-          $eq: metricClassification.metricName
-            ? metricClassification.metricName
+          $eq:
+            metricClassification.metricName ?
+              metricClassification.metricName
             : null,
         },
         application: metricClassification.application,
@@ -1360,18 +1361,74 @@ const getDsTrackedRegressionsFn = (
     const panel = DsPanels.findOne(dsPanelQuery);
 
     const panelYAxesFormat =
-      panel.panel &&
-      panel.panel.fieldConfig &&
-      panel.panel.fieldConfig.defaults &&
-      panel.panel.fieldConfig.defaults.unit
-        ? panel.panel.fieldConfig.defaults.unit
-        : '';
+      (
+        panel.panel &&
+        panel.panel.fieldConfig &&
+        panel.panel.fieldConfig.defaults &&
+        panel.panel.fieldConfig.defaults.unit
+      ) ?
+        panel.panel.fieldConfig.defaults.unit
+      : '';
 
     dsTrackedDifferencesQuery.$and.push({ testRunId: { $in: allTestRunIds } });
 
     const dsAdaptResults = DsAdaptResults.find(dsTrackedDifferencesQuery, {
       sort: { testRunStart: 1 },
     }).fetch();
+
+    // For test runs in dsControlGroup that have dsChangepoints but no dsAdaptResults,
+    // get data from dsMetricStatistics and map the values
+    if (dsControlGroup) {
+      const testRunsWithChangepoints = DsChangepoints.find({
+        testRunId: { $in: dsControlGroup.testRuns },
+      })
+        .fetch()
+        .map((cp) => cp.testRunId);
+
+      const existingAdaptResultTestRuns = dsAdaptResults.map(
+        (result) => result.testRunId,
+      );
+
+      const missingAdaptResultTestRuns = testRunsWithChangepoints.filter(
+        (testRunId) => !existingAdaptResultTestRuns.includes(testRunId),
+      );
+
+      if (missingAdaptResultTestRuns.length > 0) {
+        const metricStatisticsQuery = {
+          $and: [
+            { testRunId: { $in: missingAdaptResultTestRuns } },
+            ...dsTrackedDifferencesQuery.$and.filter(
+              (condition) =>
+                !condition.testRunId && !condition.hasOwnProperty('testRunId'),
+            ),
+          ],
+        };
+
+        const dsMetricStatistics = DsMetricStatistics.find(
+          metricStatisticsQuery,
+        ).fetch();
+
+        // Map dsMetricStatistics fields to dsAdaptResults format
+        const mappedStatistics = dsMetricStatistics.map((stat) => ({
+          ...stat,
+          controlGroup: true,
+          conclusion: {
+            label: 'incomparable',
+          },
+          statistic: {
+            test: stat.mean, //TODO use configured aggregation
+          },
+        }));
+
+        // Add the mapped statistics to dsAdaptResults
+        dsAdaptResults.push(...mappedStatistics);
+
+        // Sort again by testRunStart
+        dsAdaptResults.sort(
+          (a, b) => new Date(a.testRunStart) - new Date(b.testRunStart),
+        );
+      }
+    }
 
     const testRuns = TestRuns.find(
       {
@@ -1415,12 +1472,14 @@ const getDsMetricsFn = (
     const panel = DsPanels.findOne(dsPanelQuery);
 
     const panelYAxesFormat =
-      panel.panel &&
-      panel.panel.fieldConfig &&
-      panel.panel.fieldConfig.defaults &&
-      panel.panel.fieldConfig.defaults.unit
-        ? panel.panel.fieldConfig.defaults.unit
-        : '';
+      (
+        panel.panel &&
+        panel.panel.fieldConfig &&
+        panel.panel.fieldConfig.defaults &&
+        panel.panel.fieldConfig.defaults.unit
+      ) ?
+        panel.panel.fieldConfig.defaults.unit
+      : '';
 
     callback(null, {
       dsMetrics: dsMetrics,
