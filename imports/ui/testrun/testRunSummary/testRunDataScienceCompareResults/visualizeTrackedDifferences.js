@@ -158,8 +158,6 @@ export const createPlotlyGraphTrackedDifferences = (
   let maxDataPointTest;
   let minDataPointTest;
   let maxDataPointThresholdUpper;
-  let minDataPointThresholdUpper;
-  let maxDataPointThresholdLower;
   let minDataPointThresholdLower;
   let graphUnit =
     dsAdaptResults[0].panelYAxesFormat ?
@@ -240,39 +238,20 @@ export const createPlotlyGraphTrackedDifferences = (
       }
 
       if (dsAdaptResult.thresholds) {
-        if (
-          maxDataPointThresholdUpper === undefined ||
-          dsAdaptResult.thresholds.upper.overall > maxDataPointThresholdUpper
-        ) {
-          maxDataPointThresholdUpper = dsAdaptResult.thresholds.upper.overall;
-        }
-        if (
-          minDataPointThresholdUpper === undefined ||
-          dsAdaptResult.thresholds.upper.overall < minDataPointThresholdUpper
-        ) {
-          minDataPointThresholdUpper = dsAdaptResult.thresholds.upper.overall;
-        }
-
-        // thresholdUpperX.push(dsAdaptResult.testRunStart);
         thresholdUpperX.push(testRunIndex);
         thresholdUpperY.push(dsAdaptResult.thresholds.upper.overall);
-
-        if (
-          maxDataPointThresholdLower === undefined ||
-          dsAdaptResult.thresholds.lower.overall > maxDataPointThresholdLower
-        ) {
-          maxDataPointThresholdLower = dsAdaptResult.thresholds.lower.overall;
-        }
-        if (
-          minDataPointThresholdLower === undefined ||
-          dsAdaptResult.thresholds.lower.overall < minDataPointThresholdLower
-        ) {
-          minDataPointThresholdLower = dsAdaptResult.thresholds.lower.overall;
-        }
-
-        // thresholdLowerX.push(dsAdaptResult.testRunStart);
         thresholdLowerX.push(testRunIndex);
         thresholdLowerY.push(dsAdaptResult.thresholds.lower.overall);
+      } else {
+        // use the next test run's thresholds
+        thresholdUpperX.push(testRunIndex);
+        thresholdUpperY.push(
+          dsAdaptResults[testRunIndex + 1].thresholds.upper.overall,
+        );
+        thresholdLowerX.push(testRunIndex);
+        thresholdLowerY.push(
+          dsAdaptResults[testRunIndex + 1].thresholds.lower.overall,
+        );
       }
     });
 

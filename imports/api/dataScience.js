@@ -892,20 +892,26 @@ const updateDsTrackedDifferenceDetailsFn = (testRunId, status, callback) => {
       },
     );
 
+    const updateFields = {
+      'status.evaluatingAdapt': 'RE_EVALUATE_ADAPT',
+    };
+
     if (status === 'DENIED') {
-      TestRuns.update(
-        {
-          testRunId: testRunId,
-        },
-        {
-          $set: {
-            'status.evaluatingAdapt': 'RE_EVALUATE_ADAPT',
-          },
-        },
-      );
+      updateFields['adapt.mode'] = 'DEFAULT';
     }
 
-    callback(null, true);
+    TestRuns.update(
+      {
+        testRunId: testRunId,
+      },
+      {
+        $set: updateFields,
+      },
+    );
+
+    callBatchProcess('RE_EVALUATE', [testRunId], true)
+      .then(() => callback(null, true))
+      .catch((err) => callback(err, null));
   } catch (error) {
     callback(error, null);
   }
@@ -1653,6 +1659,7 @@ const resolveRegressionFn = (testRun, status, reEvaluate, callback) => {
       {
         $set: {
           'adapt.differencesAccepted': status,
+          'adapt.mode': 'DEFAULT',
         },
       },
     );
