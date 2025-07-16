@@ -1273,28 +1273,6 @@ const setTestRunAsBaselineFn = (testRun, callback) => {
     let adaptEnabled = false;
 
     if (application) {
-      // set autoCompareTestRuns if not present (backwards compatibility)
-      application.testEnvironments.forEach(
-        (testEnvironment, testEnvironmentIndex) => {
-          testEnvironment.testTypes.forEach((testType, testTypeIndex) => {
-            if (testType.autoCreateSnapshots === undefined)
-              application.testEnvironments[testEnvironmentIndex].testTypes[
-                testTypeIndex
-              ].autoCreateSnapshots =
-                Meteor.settings.autoCreateSnapshots ?
-                  Meteor.settings.autoCreateSnapshots === true
-                : false;
-            if (testType.autoCompareTestRuns === undefined)
-              application.testEnvironments[testEnvironmentIndex].testTypes[
-                testTypeIndex
-              ].autoCompareTestRuns =
-                Meteor.settings.autoCompareTestRuns ?
-                  Meteor.settings.autoCompareTestRuns === true
-                : false;
-          });
-        },
-      );
-
       _.each(
         application.testEnvironments,
         (testEnvironment, testEnvironmentIndex) => {
@@ -1306,6 +1284,9 @@ const setTestRunAsBaselineFn = (testRun, callback) => {
               application.testEnvironments[testEnvironmentIndex].testTypes[
                 testTypeIndex
               ].baselineTestRun = testRun.testRunId;
+              application.testEnvironments[testEnvironmentIndex].testTypes[
+                testTypeIndex
+              ].adaptMode = 'BASELINE';
               adaptEnabled =
                 application.testEnvironments[testEnvironmentIndex].testTypes[
                   testTypeIndex
