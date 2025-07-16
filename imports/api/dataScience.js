@@ -1659,6 +1659,7 @@ const resolveRegressionFn = (testRun, status, reEvaluate, callback) => {
       {
         $set: {
           'adapt.differencesAccepted': status,
+          'adapt.mode': 'DEFAULT',
         },
       },
     );
